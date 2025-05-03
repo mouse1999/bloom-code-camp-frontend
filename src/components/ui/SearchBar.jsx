@@ -7,78 +7,70 @@ const Input = styled.input`
   padding: 0.5rem 1rem 0.5rem 2.5rem;
   border: 1px solid #ddd;
   border-radius: 20px;
-  width: 200px;
+  width: 12.5rem;
   transition: width 0.3s, border-color 0.3s;
   font-size: 0.95rem;
   outline: none;
+  padding-right: 2rem; /* Add space for clear button */
 
   &:focus {
-    width: 250px;
+    width: 14.375rem;
     border-color: ${props => props.theme.primary || '#4CAF50'};
   }
 
-  /* Tablet view (typically 768px and below) */
   @media (max-width: 768px) {
-    width: 160px;
+    width: 10rem;
     padding: 0.4rem 0.8rem 0.4rem 2.2rem;
     font-size: 0.9rem;
 
     &:focus {
-      width: 200px;
+      width: 12.5rem;
     }
-    & {
-      font-size: 0.8rem;
-    }  
-    
   }
 
-  /* Mobile view (typically 480px and below) */
   @media (max-width: 480px) {
-    width: 120px;
+    width: 7.5rem;
     padding: 0.3rem 0.6rem 0.3rem 2rem;
     font-size: 0.85rem;
 
     &:focus {
-      width: 150px;
+      width: 9.375rem;
     }
-    & {
-      font-size: 0.7rem;
-    } 
   }
 `;
 
 const SearchBarContainer = styled.div`
   position: relative;
-  display: flex;
-  align-items: center;
+  width: fit-content; /* Container shrinks to fit content */
 
   &::before {
     content: "🔍";
     position: absolute;
-    left: 10px;
+    left: 0.625rem;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
+    z-index: 1;
   }
 
-  /* Adjust search icon position for smaller screens */
   @media (max-width: 768px) {
     &::before {
-      left: 8px;
+      left: 0.5rem;
       font-size: 0.9em;
     }
   }
 
   @media (max-width: 480px) {
     &::before {
-      left: 6px;
+      left: 0.375rem;
       font-size: 0.8em;
     }
   }
 `;
+
 const ClearButton = styled.button`
   position: absolute;
-  right: 10px;
+  right: 1.2rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -89,25 +81,33 @@ const ClearButton = styled.button`
   padding: 0;
   margin: 0;
   display: ${props => props.$visible ? 'block' : 'none'};
-  outline: none; /* Removes the default focus outline */
-
+  outline: none;
+  z-index: 1;
+  
   &:hover {
     color: #666;
   }
 
-  /* Remove any active/focus styles completely */
   &:active, &:focus {
     outline: none;
     border: none;
     box-shadow: none;
   }
 
-  /* Optional: Add a subtle effect when clicked */
   &:active {
     transform: translateY(-50%) scale(0.95);
   }
-`;
 
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+    right: 0.8rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    right: 0.8rem;
+  }
+`;
 const SearchBar = ({ 
   placeholder = 'Search assignments...', 
   setQuery,

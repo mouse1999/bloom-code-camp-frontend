@@ -1,11 +1,27 @@
-import SearchBarOne from "./components/common/SearchBarOne";
+
+import { useState } from "react";
+import LogButton from "./components/buttons/LogButton";
 import SearchBar from "./components/ui/SearchBar";
+import Logo from "./components/layout/Logo";
 
 function App() {
-    return(
-        <SearchBar/>
-        // <SearchBarOne></SearchBarOne>
+    const [isLoggedIn, setIsLogin] = useState(false);
+    const onclickbutton = () => {
+        setIsLogin(!isLoggedIn)
+    }
 
+
+    return(
+        // <SearchBar/>
+        // <SearchBarOne></SearchBarOne>
+        <>
+        
+        <LogButton isLoggedIn={isLoggedIn} onClick={onclickbutton} ></LogButton>
+        <SearchBar/>
+
+        <Logo></Logo>
+
+        </>
 
     );
   
