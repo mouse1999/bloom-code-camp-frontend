@@ -156,14 +156,7 @@ const SearchBar = ({
     }
   };
 
-  // Clean up timer on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, [])
+  
 
   return (
     <SearchBarContainer>
