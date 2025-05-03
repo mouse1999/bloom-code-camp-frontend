@@ -118,11 +118,17 @@ const SearchBar = ({
   const inputRef = useRef(null);
   const timerRef = useRef(null);
 
-  // Focus the input on mount (optional)
+  
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    // Focus the input on mount
+    inputRef.current?.focus();
+  
+    // Cleanup 
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
   }, []);
 
   // Handle input change with debounce
@@ -157,7 +163,7 @@ const SearchBar = ({
         clearTimeout(timerRef.current);
       }
     };
-  }, []);
+  }, [])
 
   return (
     <SearchBarContainer>
