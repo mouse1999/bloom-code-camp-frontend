@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 const LogInOutButton = styled.button`
   padding: 0.5rem 1rem;
@@ -43,6 +45,7 @@ function LogButton({ isLoggedIn, onClick }) {
       onClick={onClick}
       aria-label={isLoggedIn ? "Log out" : "Log in"}
     >
+       <FontAwesomeIcon icon={faEdit} />
       {isLoggedIn ? "Log Out" : "Log In"}
     </LogInOutButton>
   );

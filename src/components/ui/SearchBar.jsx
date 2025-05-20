@@ -82,7 +82,7 @@ const ClearButton = styled.button`
   margin: 0;
   display: ${props => props.$visible ? 'block' : 'none'};
   outline: none;
-  z-index: 1;
+  z-index: 1000;
   
   &:hover {
     color: #666;
