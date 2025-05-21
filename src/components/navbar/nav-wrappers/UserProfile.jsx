@@ -10,11 +10,11 @@ const UserProfileContainer = styled.div`
   padding: 12px;
   background-color: inherit;
   /*border-radius: 8px; */
-  border-top: 0.5px solid #f8fafc; /* Thin blue top border (Tailwind's blue-500) */
   width: 100%;
   max-width: 400px;
   margin-bottom: 1.6rem;
   box-sizing: border-box;
+  border-top: 1px solid #eff2f5; 
 
   @media (max-width: 480px) {
     gap: 12px;
@@ -26,8 +26,8 @@ const Avatar = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   background-color: #e2e8f0;
   color: #4a5568;

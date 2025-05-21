@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import UserInfo from "./components/navbar/nav-wrappers/UserInfo";
 import UserProfile from "./components/navbar/nav-wrappers/UserProfile";
-import Navbar from "./components/navbar/nav-wrappers/Navbar";
+import Navbar from "./components/navbar/Navbar";
 
 function App() {
     const [isLoggedIn, setIsLogin] = useState(false);
