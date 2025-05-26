@@ -11,6 +11,20 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import UserInfo from "./components/navbar/nav-wrappers/UserInfo";
 import UserProfile from "./components/navbar/nav-wrappers/UserProfile";
 import Navbar from "./components/navbar/Navbar";
+import LoginPage from "./pages/LoginPage";
+import RegistrationPage from "./pages/RegistrationPage";
+import ParentComponent from "./features/ParentComponent";
+import AssignmentSubmissionForm from "./features/SubmitAssignmentForm";
+import TopNavigationBar from "./components/layout/TopNavigationBar";
+import DashboardLayout from "./pages/DashboardLayout";
+import SubmitAssignmentForm from "./features/SubmitAssignmentForm";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Header from "./components/Header/Header";
+import SideMenu from "./components/SideMenu/SideMenu";
+
+
+
+
 
 function App() {
     const [isLoggedIn, setIsLogin] = useState(false);
@@ -20,29 +34,14 @@ function App() {
 
 
     return(
-        // <SearchBar/>
-        // <SearchBarOne></SearchBarOne>
-        <>
-        
-        {/* <LogButton isLoggedIn={isLoggedIn} onClick={onclickbutton} ></LogButton>
-        <SearchBar/>
-
-        <Logo></Logo>
-        <SignUpButton>
-            
-        </SignUpButton>
-        <EditButton>
-            <FontAwesomeIcon icon={faEdit} />
-            Edit
-        </EditButton>
-        <AssignmentForm></AssignmentForm> */}
-
-        {/* <UserProfile name={"Kufre Edward"} roles={["Admin"]}></UserProfile> */}
-        <Navbar></Navbar>
-
-
-        </>
-
+        <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DashboardLayout/>}>
+          <Route index element={<SubmitAssignmentForm />} />
+          <Route path="/login" element={<LoginPage/>}/>
+        </Route>
+      </Routes>
+    </BrowserRouter>
     );
   
 }

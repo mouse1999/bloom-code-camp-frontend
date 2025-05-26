@@ -29,12 +29,12 @@ const Input = styled.input`
   }
 
   @media (max-width: 480px) {
-    width: 7.5rem;
+    width: 5.5rem;
     padding: 0.3rem 0.6rem 0.3rem 2rem;
     font-size: 0.85rem;
 
     &:focus {
-      width: 9.375rem;
+      width: 7.375rem;
     }
   }
 `;
@@ -110,7 +110,7 @@ const ClearButton = styled.button`
 `;
 const SearchBar = ({ 
   placeholder = 'Search assignments...', 
-  setQuery,
+  setSearchQuery,
   delay = 300, // Add debounce delay as prop
   initialValue = '' // Add initialValue prop
 }) => {
@@ -143,14 +143,14 @@ const SearchBar = ({
     
     // Set new timer
     timerRef.current = setTimeout(() => {
-      setQuery(value);
+      setSearchQuery(value);
     }, delay);
   };
 
   // Clear search input
   const handleClear = () => {
     setInputValue('');
-    setQuery('');
+    setSearchQuery('');
     if (inputRef.current) {
       inputRef.current.focus();
     }

@@ -47,10 +47,10 @@ const TitleSpan = styled.span`
   }
 `;
 
-function NavbarLink({ fontElement, navLinkTitle, onClick, activeTab, index }) {
+function NavbarLink({ fontElement, navLinkTitle, onClick, activeTab, index, to }) {
   return (
     <NavbarLinkContainer
-      to='/to'
+      to={to}
       onClick={onClick}
       className={activeTab === index ? 'activate' : ''}
     >

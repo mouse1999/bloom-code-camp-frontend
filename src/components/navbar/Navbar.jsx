@@ -15,11 +15,14 @@ const NavbarContainer = styled.aside`
   width: 250px;
   background: #f8fafc;
   padding: 5px;
-  height: 100vh;
+  height: calc(100vh - 60px); /* Full height minus the top nav */
   position: fixed;
-
-  
+  top: 60px; /* Push below top nav */
+  left: 0;
+  z-index: 90;
+  box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
 `;
+
 
 const NavForLinks = styled.nav`
   flex: 1;
@@ -41,7 +44,7 @@ const MobileMenuToggle = styled.button`
   font-size: 1.5rem;
   cursor: pointer;
   color: #64748b;
-  z-index: 101; /* Ensure it stays above other elements */
+  z-index: 2000; /* Ensure it stays above other elements */
 
   /* Default position for debugging on larger screens */
   position: static; /* Reset position for easier debugging, or set a fixed position */
@@ -106,11 +109,11 @@ function Navbar() {
 
     
     const navLinkList = [
-        { icon: <FontAwesomeIcon icon={faHome} />, message: "Dashboard" },
-        { icon: <FontAwesomeIcon icon={faBars} />, message: "Menu" },
-        { icon: <FontAwesomeIcon icon={faUser} />, message: "Profile" },
-        { icon: <FontAwesomeIcon icon={faEnvelope} />, message: "Contact" },
-        { icon: <FontAwesomeIcon icon={faUsers} />, message: "Users" }
+        { icon: <FontAwesomeIcon icon={faHome} />, message: "Create Assignment" , to : '/submit'},
+        { icon: <FontAwesomeIcon icon={faBars} />, message: "Menu",to : '' },
+        { icon: <FontAwesomeIcon icon={faUser} />, message: "Profile", to : '/submit' },
+        { icon: <FontAwesomeIcon icon={faEnvelope} />, message: "Contact", to : '/submit' },
+        { icon: <FontAwesomeIcon icon={faUsers} />, message: "Users", to : '/submit' }
     ];
 
     return (
@@ -138,6 +141,8 @@ function Navbar() {
                     activeTab={activeTab}
                     key={index}
                     index={index}
+                    to={item.to}
+                    
                 />
             ))}
             </NavForLinks>
