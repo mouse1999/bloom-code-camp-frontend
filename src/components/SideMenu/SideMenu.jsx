@@ -12,13 +12,17 @@ import {
   faBars,
   faXmark
 } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 const SideMenu = ({
   isOpen,
   setIsOpen,
-  isMobileView
+  isMobileView,
+  menuItems,
+  activeItem,
+  setActiveItem
+
 }) => {
-  const [activeItem, setActiveItem] = useState('dashboard');
   
 
   const onToggle = (id) => {
@@ -27,22 +31,9 @@ const SideMenu = ({
       setIsOpen(false)
 
     };
-    
-
-
   }
 
 
-  
-
-  const menuItems = [
-    { icon: faTachometerAlt, label: 'Dashboard', id: 'dashboard' },
-    { icon: faTasks, label: 'Assignments', id: 'assignments' },
-    { icon: faGraduationCap, label: 'Learning Path', id: 'learning-path' },
-    { icon: faBook, label: 'Resources', id: 'resources' },
-    { icon: faChartLine, label: 'Progress', id: 'progress' },
-    { icon: faCog, label: 'Settings', id: 'settings' },
-  ];
 
   return (
     <SidebarContainer isOpen={isOpen}>
@@ -70,6 +61,7 @@ const SideMenu = ({
             key={item.id}
             active={activeItem === item.id}
             onClick={() => onToggle(item.id)}
+            to={"/login"}
           >
             <MenuItemIcon>
               <FontAwesomeIcon icon={item.icon} />
@@ -156,10 +148,13 @@ const MenuItems = styled.ul`
   flex-grow: 1;
 `;
 
-const MenuItem = styled.li`
+const MenuItem = styled(Link)`
   margin-bottom: 0.5rem;
   padding: 0.8rem 1.5rem;
   cursor: pointer;
+  text-decoration: none;
+  color: white;
+
   transition: all 0.3s;
   display: flex;
   align-items: center;
@@ -190,6 +185,7 @@ const MenuItemIcon = styled.div`
 
 const MenuItemLabel = styled.span`
   white-space: nowrap;
+  font-weight: 500;
   margin-left: 1rem;
   @media (max-width: 768px) {
    font-size: 0.8rem;

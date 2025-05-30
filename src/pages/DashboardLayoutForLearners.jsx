@@ -3,11 +3,23 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header/Header';
 import SideMenu from '../components/SideMenu/SideMenu';
-import AssignmentsDashboard from '../components/Dashboard/Learner/AssignmentsDashboard';
+import AssignmentsDashboard from '../components/Dashboard/Learner/LearnersDashboard';
+import CreateNewAssignment from '../components/Dashboard/Learner/CreateNewAssignment';
+import AssignmentView from '../components/Dashboard/Learner/AssignmentView';
 
-const DashboardLayout = ({ children = <AssignmentsDashboard/> }) => {
+const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
   const [isOpen, setIsOpen] = useState(true);
   const[isMobileView, setIsMobileView] = useState(false);
+
+  const menuItems = [
+    { icon: faTachometerAlt, label: 'Dashboard', id: 'dashboard' },
+    { icon: faTasks, label: 'Assignments', id: 'assignments' },
+    { icon: faGraduationCap, label: 'Learning Path', id: 'learning-path' },
+    { icon: faBook, label: 'Resources', id: 'resources' },
+    { icon: faChartLine, label: 'Progress', id: 'progress' },
+    { icon: faCog, label: 'Settings', id: 'settings' },
+  ];
+
 
   useEffect(() => {
 
@@ -35,7 +47,7 @@ const DashboardLayout = ({ children = <AssignmentsDashboard/> }) => {
 
   return (
     <LayoutContainer>
-      <SideMenu isOpen={isOpen} setIsOpen={setIsOpen} isMobileView={isMobileView} />
+      <SideMenu isOpen={isOpen} setIsOpen={setIsOpen} isMobileView={isMobileView} menuItems={menuItems} />
       
       <MainContent isOpen={isOpen}>
         <Header />
@@ -83,4 +95,4 @@ const ContentWrapper = styled.div`
 
 
 
-export default DashboardLayout;
+export default DashboardLayoutForLearners;

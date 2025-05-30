@@ -12,7 +12,7 @@ import {
   faCaretDown
 } from '@fortawesome/free-solid-svg-icons';
 
-const Header = () => {
+const Header = ({activeHeaderTitle}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileView, setIsMobileView] = useState(false);
@@ -39,7 +39,7 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <HeaderTitle>My Assignments</HeaderTitle>
+      <HeaderTitle>{activeHeaderTitle}</HeaderTitle>
       
       <HeaderActions>
         <SearchBar setSearchQuery={setSearchQuery}></SearchBar>
@@ -49,7 +49,7 @@ const Header = () => {
             <UserAvatar>
               <FontAwesomeIcon icon={faUserCircle} />
             </UserAvatar>
-            <UserName>John Doe</UserName>
+            <UserName>Kufre Edward</UserName>
             <FontAwesomeIcon icon={faCaretDown} />
           </UserButton>
           

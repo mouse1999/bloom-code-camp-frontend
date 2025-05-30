@@ -16,11 +16,13 @@ import RegistrationPage from "./pages/RegistrationPage";
 import ParentComponent from "./features/ParentComponent";
 import AssignmentSubmissionForm from "./features/SubmitAssignmentForm";
 import TopNavigationBar from "./components/layout/TopNavigationBar";
-import DashboardLayout from "./pages/DashboardLayout";
+import DashboardLayout from "./pages/DashboardLayoutForLearners";
 import SubmitAssignmentForm from "./features/SubmitAssignmentForm";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header/Header";
 import SideMenu from "./components/SideMenu/SideMenu";
+import DashboardLayoutForLearners from "./pages/DashboardLayoutForLearners";
+import DashboardLayoutForReviewer from "./components/Dashboard/Reviewer/DashboardLayoutForReviewer";
 
 
 
@@ -36,7 +38,7 @@ function App() {
     return(
         <BrowserRouter>
       <Routes>
-        <Route path="/" element={<DashboardLayout/>}>
+        <Route path="/" element={<DashboardLayoutForReviewer/>}>
           <Route index element={<SubmitAssignmentForm />} />
           <Route path="/login" element={<LoginPage/>}/>
         </Route>

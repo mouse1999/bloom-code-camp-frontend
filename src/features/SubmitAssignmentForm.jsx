@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-const SubmitAssignmentForm = () => {
+const SubmitAssignmentForm = ({assignmentEnumList=[]}) => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const assignment =  { id: 1, name: 'Math Homework', dueDate: '2023-06-15', isSubmitted: false }//state?.assignment;
@@ -66,6 +66,24 @@ const SubmitAssignmentForm = () => {
       </FormHeader>
 
       <form onSubmit={handleSubmit}>
+      <FormGroup>
+              <AssignmentLabel htmlFor="assignment-number">Assignment Number</AssignmentLabel>
+              <AssignmentSelect >
+
+                <option value={""}>Choose An Assignment</option>  /*only option is not a style component  */
+                {
+                  assignmentEnumList.map((item) => {
+                    <option value={item.code} >{item.name}</option>
+
+                    
+
+                  })
+                }
+              </AssignmentSelect>
+            </FormGroup>
+
+
+
         <FormGroup>
           <InputLabel htmlFor="githubUrl">GitHub Repository</InputLabel>
           <InputField
@@ -258,5 +276,30 @@ const ErrorMessage = styled.div`
   background: rgba(239, 68, 68, 0.1);
   border-radius: 8px;
 `;
+
+
+const AssignmentLabel = styled.label`
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #343a40;
+  font-size: 0.95rem;
+`;
+
+const AssignmentSelect = styled.select`
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: white;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  
+  &:focus {
+    outline: none;
+    border-color: #4a6fa5;
+    box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+  }
+`
 
 export default SubmitAssignmentForm;
