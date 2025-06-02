@@ -5,12 +5,15 @@ import SideMenu from "../../SideMenu/SideMenu";
 import styled from "styled-components";
 import { faBook, faChartLine, faCog, faGraduationCap, faTachometerAlt, faTasks } from "@fortawesome/free-solid-svg-icons";
 import ReviewersDashboard from "./ReviewersDashboard";
+import AssignmentView from "../Learner/AssignmentView";
+import ReviewerAssignmentView from "./ReviewerAssignmentView";
 
-const DashboardLayoutForReviewer = ({ children = <ReviewersDashboard/> }) => {
+const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
 
     const [isOpen, setIsOpen] = useState(true);
     const[isMobileView, setIsMobileView] = useState(false);
     const [activeItem, setActiveItem] = useState(null);
+    const [assignments, setAssignment] = useState({});
   
 
     const menuItems = [
@@ -29,8 +32,13 @@ const DashboardLayoutForReviewer = ({ children = <ReviewersDashboard/> }) => {
   
         }
       }
+
+    //this function will fetch assigment handled by a specific reviewer
   
       checkMobile();
+
+
+
       window.addEventListener('resize', checkMobile);
       return () => {
         window.removeEventListener('resize', checkMobile);
@@ -38,6 +46,20 @@ const DashboardLayoutForReviewer = ({ children = <ReviewersDashboard/> }) => {
       };
   
     }, [] );
+
+
+    useEffect(() => {
+
+        const fetchAssignments = () => {
+
+
+
+        }
+        fetchAssignments();
+
+
+
+    }, []);
     
   
     

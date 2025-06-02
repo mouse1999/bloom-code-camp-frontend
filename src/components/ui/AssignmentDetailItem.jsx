@@ -19,17 +19,20 @@ const Item = styled.div `
 `;
 
 const DetailLabel = styled.div`
-    font-weight: 500;
+    font-weight: 550;
     color: #666;
     font-size: 0.8rem;
     margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
     gap: 0.7rem;
+    font-family: Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 `;
 const DetailValue = styled.div`
 font-size: 1.1rem;
 font-weight: 500;
+overflow-wrap: break-word;
+white-space: normal;
 
 `;
 

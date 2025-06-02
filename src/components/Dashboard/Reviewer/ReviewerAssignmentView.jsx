@@ -1,10 +1,12 @@
 import styled from "styled-components";
 import BackLinkToDashboard from "../../ui/BackLinkToDashboard";
-import { DashboardContainer } from "./LearnersDashboard";
+import { DashboardContainer } from "../Learner/LearnersDashboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AssignmentDetailItem from "../../ui/AssignmentDetailItem";
 import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+
 
 import {
   faCheckCircle,
@@ -13,14 +15,17 @@ import {
   faInfoCircle,
   faUserCircle,
   faCodeBranch, 
-   faVideo,
-  faCalendarAlt, 
+  faVideo,
+  faCalendarAlt,
+  faUserGraduate,
+  faFloppyDisk,
+  faCheck,
+
+  faXmark, 
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import LoadingSpinner from "../../ui/LoadingSpinner";
-import { faSignalMessenger } from "@fortawesome/free-brands-svg-icons";
 
-// Styled Components
+
 const AssignmentViewContainer = styled.div`
   background-color: white;
   border-radius: 8px;
@@ -112,97 +117,237 @@ const AssignmentDetails = styled.div`
   margin-bottom: 2rem;
 `;
 
+const TextContainer = styled.div`
+width: 80%;
 
-const VideoContainer = styled.div`
-`;
-const FeedbackContainer = styled.div`
-font-weight: 500;
-  margin-bottom: 1.25rem;
-  color: #212529;
-  font-size: 0.9rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 1rem;
-  & p {
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: 550;
-  
-  
-  }
+     margin-bottom: 2rem;
 
 `;
+const TextArea =styled.textarea`
+width: 100%;
+box-sizing: border-box;
+min-height: 200px;
+padding: 1.25rem;
+border: 1px solid #ddd;
+border-radius: 8px;
+overflow-y: auto;
+font-family: 'Courier New', Courier, monospace;
+font-size: 0.9rem;
+line-height: 1.6;
+transition: all 0.3s;
+resize: vertical;
+&: focus {
+ outline: none;
+border-color: #4cc9f0;
+box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
 
 
+
+}
+
+`;
+
+const UrlContainer = styled.div`
+ margin-bottom: 2rem;
+ width:80%;
+
+`;
+
+const Input = styled.input`
+width: 100%;
+box-sizing: border-box;
+            padding: 1rem 1.25rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+  &:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
+        }
+
+`;
+
+
+const InputLabel = styled.label`
+display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: #666;
+
+`;
+
+const ReviewAction = styled.div`
+display: flex;
+            justify-content: flex-start;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+
+`;
+
+const RejectedButton = styled.button`
+padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: #4361ee;
+            color: white;
+            &: hover {
+                background-color: #3a0ca3;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+            
+            }
+
+`;
+
+const DraftButton = styled.button`
+padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: #e74c3c;
+            color: white;
+
+            &: hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+            
+            }
+
+`;
+
+const CompletedButton = styled.button`
+padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: #2ecc71;
+            color: white;
+
+            &: hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+            
+            
+            }
+
+
+`;
 
 // Mock API call 
 const mockFetchAssignmentFromDB = async (id) => {
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 500));
+  
+    // Simulated data
+    const assignments = [
+      {
+        id: "assign-123",
+        title: "React Hooks Deep Dive",
+        githubUrl: "https://github.com/user/react-hooks-example",
+        branch: "main",
+        submittedAt: "2024-05-20T10:00:00Z",
+        reviewedAt: "2024-05-22T14:30:00Z",
+        reviewerId: "reviewer-456",
+        learner: "Jen",
+        dueDate: "2024-05-25T23:59:59Z",
+        status: "Completed",
+        notes: "All tests passed, good use of custom hooks."
+      },
+      {
+        id: "assign-456",
+        title: "Spring Boot Microservices",
+        githubUrl: "https://github.com/anotheruser/spring-microservices",
+        branch: "feature/auth",
+        submittedAt: "2024-05-18T09:15:00Z",
+        reviewedAt: null,
+        learner: "Jen",
+        reviewerId: null,
+        dueDate: "2024-05-28T23:59:59Z",
+        status: "Submitted",
+        notes: "Waiting for review."
+      },
+      {
+        id: "assign-789",
+        title: "Python Data Analysis",
+        githubUrl: "https://github.com/datauser/python-analysis",
+        branch: "master",
+        submittedAt: "2024-05-10T11:00:00Z",
+        learner: "Jen",
+        reviewedAt: "2024-05-12T16:00:00Z",
+        reviewerId: "reviewer-789",
+        dueDate: "2024-05-15T23:59:59Z",
+        status: "Needs Update",
+        notes: "Needs more robust error handling for data parsing."
+      },
+      {
+        id: "assign-012",
+        title: "Basic HTML/CSS Landing Page",
+        githubUrl: "https://github.com/beginner/landing-page",
+        branch: "main",
+        submittedAt: null,
+        learner: "Jen",
+        reviewedAt: null,
+        reviewerId: null,
+        dueDate: "2024-06-05T23:59:59Z",
+        status: "Pending Submission",
+        notes: "Still working on responsiveness."
+      }
+    ];
+  
+    return assignments.find(assignment => assignment.id === id);
+  };
+  
 
-  // Simulated data
-  const assignments = [
-    {
-      id: "assign-123",
-      title: "React Hooks Deep Dive",
-      githubUrl: "https://github.com/user/react-hooks-example",
-      branch: "main",
-      submittedAt: "2024-05-20T10:00:00Z",
-      reviewedAt: "2024-05-22T14:30:00Z",
-      reviewerId: "reviewer-456",
-      dueDate: "2024-05-25T23:59:59Z",
-      status: "Completed",
-      notes: "All tests passed, good use of custom hooks."
-    },
-    {
-      id: "assign-456",
-      title: "Spring Boot Microservices",
-      githubUrl: "https://github.com/anotheruser/spring-microservices",
-      branch: "feature/auth",
-      submittedAt: "2024-05-18T09:15:00Z",
-      reviewedAt: null,
-      reviewerId: null,
-      dueDate: "2024-05-28T23:59:59Z",
-      status: "Submitted",
-      notes: "Waiting for review."
-    },
-    {
-      id: "assign-789",
-      title: "Python Data Analysis",
-      githubUrl: "https://github.com/datauser/python-analysis",
-      branch: "master",
-      submittedAt: "2024-05-10T11:00:00Z",
-      reviewedAt: "2024-05-12T16:00:00Z",
-      reviewerId: "reviewer-789",
-      dueDate: "2024-05-15T23:59:59Z",
-      status: "Needs Update",
-      notes: "Needs more robust error handling for data parsing."
-    },
-    {
-      id: "assign-012",
-      title: "Basic HTML/CSS Landing Page",
-      githubUrl: "https://github.com/beginner/landing-page",
-      branch: "main",
-      submittedAt: null,
-      reviewedAt: null,
-      reviewerId: null,
-      dueDate: "2024-06-05T23:59:59Z",
-      status: "Pending Submission",
-      notes: "Still working on responsiveness."
-    }
-  ];
-
-  return assignments.find(assignment => assignment.id === id);
-};
 
 
-const AssignmentView = () => {
 
-  const { assignmentId = "assign-456" } = useParams();
+
+
+
+
+
+export default function ReviewerAssignmentView() {
+
+
+
+    const { assignmentId = "assign-456" } = useParams();
 
   const [assignmentDetail, setAssignmentDetail] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [assignment, setAssignment] = useState({}); 
+  const [formData, setFormData] = useState({
+    review : '',
+    video: ''
+  });
 
   
   const processAssignmentForDisplay = (assignmentData) => {
@@ -211,11 +356,11 @@ const AssignmentView = () => {
     // Define the order and icons
     const assignmentMapping = {
       "Submitted Date": { value: assignmentData.submittedAt, icon: faCalendarAlt },
+      "Learner": { value: assignmentData.learner, icon: faUserGraduate },
       "Reviewed Date": { value: assignmentData.reviewedAt, icon: faCalendarAlt },
       "Branch": { value: assignmentData.branch, icon: faCodeBranch },
       "Reviewer": { value: assignmentData.reviewerId, icon: faUsers },
-      "GitHub Repository URL": { value: assignmentData.githubUrl, icon: faClock },
-      "Due Date": { value: assignmentData.dueDate, icon: faCalendarAlt }, // Added DueDate
+      "GitHub Repository URL": { value: assignmentData.githubUrl, icon: faGithub },
       "Notes": { value: assignmentData.notes, icon: faInfoCircle }, // Added Notes
     };
 
@@ -324,11 +469,27 @@ const AssignmentView = () => {
     );
   }
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    // Add your form submission logic here
+
+  }
+
+
   return (
     <DashboardContainer>
-      <>
-      <LoadingSpinner isLoading={loading}></LoadingSpinner>
-
+        <>
         <BackLinkToDashboard />
         <AssignmentViewContainer>
           <Header>
@@ -361,31 +522,66 @@ const AssignmentView = () => {
           </AssignmentDetails>
 
           <SectionTitle>
-            <FontAwesomeIcon icon={faVideo} color="#4361ee"/>
-            <h3>Review Video</h3>
-          </SectionTitle>
-          <VideoContainer>
-
-          </VideoContainer>
-
-          <SectionTitle>
-            <FontAwesomeIcon icon={faSignalMessenger} color="#4361ee"/>
-            <h3>Feedback</h3>
+            <FontAwesomeIcon icon={faInfoCircle} color="#4361ee" />
+            <h3>Code Review</h3>
 
           </SectionTitle>
-          <FeedbackContainer>
-            <h4>Feedback Comment:</h4>
-            <p>This is first paragraph</p>
-            <p>This is second paragraph</p>
+          <form onSubmit={handleSubmit}>
 
-          </FeedbackContainer>
+            <TextContainer>
+                <TextArea
+                id="review"
+                name="review"
+                value={formData.review}
+                onChange={handleChange}
+                
+                />
 
+            </TextContainer>
+
+            <SectionTitle>
+                <FontAwesomeIcon icon={faVideo} color="#4361ee"/>
+                <h3>Review Video URL</h3>
+
+            </SectionTitle>
+            <UrlContainer>
+                <InputLabel htmlFor="video">Enter review video URL (e.g., Loom, YouTube)</InputLabel>
+                <Input
+                id="video"
+                name="video"
+                value={formData.video}
+                onChange={handleChange}
+                placeholder="loom, youtube, e.t.c"
+                />
+            </UrlContainer>
+
+            <ReviewAction>
+                <RejectedButton type="button">
+                    <FontAwesomeIcon icon={faXmark}/>
+                    {'Reject'}
+                </RejectedButton>
+
+                <DraftButton type="button">
+                  <FontAwesomeIcon icon={faFloppyDisk}/>
+                  {'Save as Draft'}
+                </DraftButton>
+
+                <CompletedButton type="submit">
+                  <FontAwesomeIcon icon={faCheck}/>
+                  {'Complete'}
+                </CompletedButton>
+
+            </ReviewAction>
+          </form>
+
+          
 
 
         </AssignmentViewContainer>
       </>
-    </DashboardContainer>
-  );
-};
 
-export default AssignmentView
+
+    </DashboardContainer>
+    
+  );
+}

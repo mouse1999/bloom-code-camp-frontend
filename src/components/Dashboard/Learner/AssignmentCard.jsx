@@ -188,7 +188,7 @@ const AssignmentCard = ({
 
               
 
-              {status === 'Needs Update' && isReviewerClaimed && (
+              {status === 'Needs Update' &&  (
                 // Reclaim when rejected and already claimed by reviewer
                 <ActionButton secondary onClick={() => onReclaimClick(id)}>
                   <FontAwesomeIcon icon={faExchangeAlt} /> Reclaim
@@ -202,7 +202,7 @@ const AssignmentCard = ({
                 </ActionButton>
               )}
 
-              {status === 'In Review' && isReviewerClaimed && (
+              {status === 'In Review' &&  (
                 <ActionButton outline onClick={() => onEditClick(id)}>
                 <FontAwesomeIcon icon={faEdit} /> Edit
               </ActionButton>
@@ -276,12 +276,7 @@ const StatusBadge = styled.span`
       case 'In Review': return 'rgba(231, 76, 60, 0.1)';
       case 'Resubmitted': return 'rgba(52, 152, 219, 0.1)';    
       
-      {/* PENDING_SUBMISSION("Pending Submission", 1),
-        SUBMITTED("Submitted", 2),
-        IN_REVIEW("In Review", 3),
-        NEEDS_UPDATE("Needs Update", 4),
-        COMPLETED("Completed", 5),
-        RESUBMITTED */}
+
       default: return '#f1f3f5';
     }
   }};

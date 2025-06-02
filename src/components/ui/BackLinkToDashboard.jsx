@@ -12,6 +12,10 @@ const BackLinkWrapper = styled(Link)`
   display: inline-flex;
  align-items: center;
   gap: 0.5rem;
+  &: hover {
+  text-decoration: underline;
+  
+  }
 
 `;
 
