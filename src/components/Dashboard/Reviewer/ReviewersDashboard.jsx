@@ -210,7 +210,7 @@ function ReviewersDashboard({ userRole }) { // Assuming userRole is passed as a 
               id={assignment.id}
               key={assignment.id}
               status={assignment.status}
-              title={assignment.title}
+              title={assignment.assignmentType}
               course={assignment.course}
               branch={assignment.branch}
               description={assignment.description}

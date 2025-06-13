@@ -154,6 +154,7 @@ const CreateNewAssignment = () => {
                         }
                     );
                     setAssignmentId(response.data.id);
+                    console.log(response.data);
                     setSubmissionMessage({ type: 'success', message: `Assignment ${selectedItem.assignmentName} selected and prepared for submission!` });
                 } catch (error) {
                     console.error('Error creating assignment:', error);
@@ -190,7 +191,7 @@ const CreateNewAssignment = () => {
     const cancelAssignmentSelection = () => {
         setShowSelectionConfirmationModal(false);
         setSelectedAssignmentForConfirmation(null);
-        // Optionally reset the dropdown to "Select Assignment" if needed
+        
         // setFormData(prev => ({ ...prev, assignmentNumber: '' }));
         // setSelectedAssignmentDetails(null);
         // setIsAlreadyDone(false);

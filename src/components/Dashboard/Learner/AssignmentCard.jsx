@@ -17,19 +17,18 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 const AssignmentCard = ({
-  id, // <--- NEW: Add id prop here
-  title,
-  status,
-  course,
-  branch,
-  description,
-  progress,
-  submittedDate,
-  feedback,
-  learnersName,
-  reviewersName,
-  reviewDate,
-  involved, // 'learner' or 'reviewer'
+id, // <--- NEW: Add id prop here
+submittedDate,
+title,
+reviewedDate,
+branch,
+reviewer,
+learner,
+gitHubURL,
+videoUrl,
+status,
+assignmentNumber, 
+involved, // 'learner' or 'reviewer'
   // <--- NEW: Add action handler props here
   onEditClick,
   onSubmitClick,
@@ -41,7 +40,7 @@ const AssignmentCard = ({
 }) => {
 
   // Helper to check if a reviewer has claimed this assignment
-  const isReviewerClaimed = reviewersName && reviewersName.trim() !== '';
+  const isReviewerClaimed = reviewer && reviewer.trim() !== '';
 
   return (
     <AssignmentFormContainer>
@@ -67,24 +66,41 @@ const AssignmentCard = ({
       </CardHeader>
 
       <CardBody>
-        <DetailRow>
-          <DetailLabel>Course:</DetailLabel>
-          <DetailValue>{course}</DetailValue>
-        </DetailRow>
 
-        <DetailRow>
-          <DetailLabel>Branch:</DetailLabel>
-          <DetailValue>{branch}</DetailValue>
-        </DetailRow>
 
-        {description && (
-          <DetailRow>
-            <DetailLabel>Description:</DetailLabel>
-            <DetailValue>{description}</DetailValue>
-          </DetailRow>
-        )}
+          {branch && (
+            <DetailRow>
+              <DetailLabel>Branch:</DetailLabel>
+              <DetailValue>{branch}</DetailValue>
+            </DetailRow>
+          )}
 
-        {involved === 'learner' && progress && (
+
+          {learner && involved === "reviewer" && (
+            <DetailRow>
+              <DetailLabel>Learner:</DetailLabel>
+              <DetailValue>{learner}</DetailValue>
+            </DetailRow>
+          )}
+
+          {gitHubURL && (
+            <DetailRow>
+              <DetailLabel>GitHubURL:</DetailLabel>
+              <DetailValue>{gitHubURL}</DetailValue>
+            </DetailRow>
+          )}
+
+          {videoUrl && (
+            <DetailRow>
+              <DetailLabel>VideoURL:</DetailLabel>
+              <DetailValue>{videoUrl}</DetailValue>
+            </DetailRow>
+          )}
+
+          
+          
+
+        {/* {involved === 'learner' && progress && (
           <ProgressContainer>
             <ProgressLabel>
               <span>Progress</span>
@@ -94,42 +110,30 @@ const AssignmentCard = ({
               <ProgressFill progress={progress} />
             </ProgressBar>
           </ProgressContainer>
-        )}
+        )} */}
 
-        {submittedDate && (
-          <DetailRow>
-            <DetailLabel>Submitted:</DetailLabel>
-            <DetailValue>{submittedDate}</DetailValue>
-          </DetailRow>
-        )}
+       {submittedDate && (
+            <DetailRow>
+              <DetailLabel>Submitted Date:</DetailLabel>
+              <DetailValue>{submittedDate}</DetailValue>
+            </DetailRow>
+          )}
 
-        {feedback && (
-          <DetailRow>
-            <DetailLabel>Feedback:</DetailLabel>
-            <DetailValue
-              style={{
-                color: status === 'Submitted' ? '#ff9800' : undefined,
-                fontWeight: 600
-              }}
-            >
-              {feedback}
-            </DetailValue>
-          </DetailRow>
-        )}
+        
 
-        {reviewDate && (
-          <DetailRow>
-            <DetailLabel>Reviewed Date:</DetailLabel>
-            <DetailValue>{reviewDate}</DetailValue>
-          </DetailRow>
-        )}
+        {reviewedDate && (
+            <DetailRow>
+              <DetailLabel>Reviewed Date:</DetailLabel>
+              <DetailValue>{reviewedDate}</DetailValue>
+            </DetailRow>
+          )}
 
-        {reviewersName && (
-          <DetailRow>
-            <DetailLabel>Reviewer:</DetailLabel>
-            <DetailValue>{reviewersName}</DetailValue>
-          </DetailRow>
-        )}
+       {reviewer && (
+            <DetailRow>
+              <DetailLabel>Reviewer:</DetailLabel>
+              <DetailValue>{reviewer}</DetailValue>
+            </DetailRow>
+          )}
       </CardBody>
 
       <CardFooter>
@@ -229,7 +233,7 @@ const AssignmentCard = ({
 };
 
 
-// Styled Components
+
 const AssignmentFormContainer = styled.div`
   background-color: white;
   border-radius: 8px;
@@ -313,9 +317,9 @@ const DetailLabel = styled.span`
 `;
 
 const DetailValue = styled.span`
-  font-size: 0.85rem; /* Standard readable text size */
+  font-size: 0.8rem; /* Standard readable text size */
   color: #333; /* Darker grey for good contrast */
-  font-weight: 40; /* Regular weight, easy on the eyes */
+  font-weight: 550; /* Regular weight, easy on the eyes */
   line-height: 1.5; /* Good spacing for readability */
   /* If it's part of a key-value pair, you might want some margin */
   margin-left: 0.5rem; /* Space from a preceding label */

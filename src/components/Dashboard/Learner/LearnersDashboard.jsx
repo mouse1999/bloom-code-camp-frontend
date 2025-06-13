@@ -188,6 +188,7 @@ const LearnersDashboard = () => {
               submittedDate={assignment.createdAt}
               ReviewedDate={assignment.reviewedAt}
               branch={assignment.branch}
+              title={assignment.assignmentType}
               reviewer={assignment.codeReviewerName}
               learner={assignment.learnerName}
               gitHubURL={assignment.githubUrl}
