@@ -19,12 +19,16 @@ const SideMenu = ({
   setIsOpen,
   isMobileView,
   menuItems,
-  activeItem,
-  setActiveItem
+  // activeItem,
+  // setActiveItem,
+  handleLogout
 
 }) => {
+
+  
   
 
+ const [activeItem, setActiveItem] = useState('dashboard');
   const onToggle = (id) => {
     setActiveItem(id);
     if(isMobileView) {
@@ -61,7 +65,7 @@ const SideMenu = ({
             key={item.id}
             active={activeItem === item.id}
             onClick={() => onToggle(item.id)}
-            to={"/login"}
+            to={ item.path || `/learner/${item.id}`}
           >
             <MenuItemIcon>
               <FontAwesomeIcon icon={item.icon} />
@@ -72,7 +76,9 @@ const SideMenu = ({
       </MenuItems>
 
       <SidebarFooter>
-        <LogoutButton>
+        <LogoutButton
+        onClick={handleLogout} 
+        >
           <FontAwesomeIcon icon={faSignOutAlt} />
           {isOpen && <span>Logout</span>}
         </LogoutButton>

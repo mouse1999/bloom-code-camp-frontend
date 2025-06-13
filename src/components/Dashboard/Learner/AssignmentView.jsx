@@ -19,6 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import { faSignalMessenger } from "@fortawesome/free-brands-svg-icons";
+import axios from "axios";
 
 // Styled Components
 const AssignmentViewContainer = styled.div`
@@ -134,64 +135,23 @@ font-weight: 500;
 
 
 
-// Mock API call 
-const mockFetchAssignmentFromDB = async (id) => {
+// Fetch assignment from backend using axios
+const fetchAssignmentFromDB = async (id) => {
+  const token = localStorage.getItem('jwt token');
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // Replace with your actual API endpoint
+  const endpoint = `YOUR_API_ENDPOINT_HERE/${id}`;
 
-  // Simulated data
-  const assignments = [
-    {
-      id: "assign-123",
-      title: "React Hooks Deep Dive",
-      githubUrl: "https://github.com/user/react-hooks-example",
-      branch: "main",
-      submittedAt: "2024-05-20T10:00:00Z",
-      reviewedAt: "2024-05-22T14:30:00Z",
-      reviewerId: "reviewer-456",
-      dueDate: "2024-05-25T23:59:59Z",
-      status: "Completed",
-      notes: "All tests passed, good use of custom hooks."
-    },
-    {
-      id: "assign-456",
-      title: "Spring Boot Microservices",
-      githubUrl: "https://github.com/anotheruser/spring-microservices",
-      branch: "feature/auth",
-      submittedAt: "2024-05-18T09:15:00Z",
-      reviewedAt: null,
-      reviewerId: null,
-      dueDate: "2024-05-28T23:59:59Z",
-      status: "Submitted",
-      notes: "Waiting for review."
-    },
-    {
-      id: "assign-789",
-      title: "Python Data Analysis",
-      githubUrl: "https://github.com/datauser/python-analysis",
-      branch: "master",
-      submittedAt: "2024-05-10T11:00:00Z",
-      reviewedAt: "2024-05-12T16:00:00Z",
-      reviewerId: "reviewer-789",
-      dueDate: "2024-05-15T23:59:59Z",
-      status: "Needs Update",
-      notes: "Needs more robust error handling for data parsing."
-    },
-    {
-      id: "assign-012",
-      title: "Basic HTML/CSS Landing Page",
-      githubUrl: "https://github.com/beginner/landing-page",
-      branch: "main",
-      submittedAt: null,
-      reviewedAt: null,
-      reviewerId: null,
-      dueDate: "2024-06-05T23:59:59Z",
-      status: "Pending Submission",
-      notes: "Still working on responsiveness."
+  const response = await axios.get(endpoint, {
+    headers: {
+      'Authorization': `Bearer ${token}`
     }
-  ];
+  });
 
-  return assignments.find(assignment => assignment.id === id);
+  return response.data;
 };
 
 
@@ -269,7 +229,7 @@ const AssignmentView = () => {
           return;
         }
 
-        const rawData = await mockFetchAssignmentFromDB(assignmentId);
+        const rawData = fetchAssignmentFromDB(assignmentId);
 
         if (rawData) {
           setAssignment(rawData); 

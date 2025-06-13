@@ -294,7 +294,7 @@ const AssignmentSelect = styled.select`
   font-size: 1rem;
   background-color: white;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  
+  s
   &:focus {
     outline: none;
     border-color: #4a6fa5;

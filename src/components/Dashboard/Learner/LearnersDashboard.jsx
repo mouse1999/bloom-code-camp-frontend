@@ -1,54 +1,137 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import AssignmentCard from './AssignmentCard';
+import LoadingSpinner from '../../ui/LoadingSpinner';
+import { useOutletContext } from 'react-router-dom';
+import axios from 'axios';
 
-const AssignmentsDashboard = () => {
-  const [activeFilter, setActiveFilter] = useState('all');
-  
-  // Sample assignment data
-  const assignments = [
-    {
-      id: 1,
-      title: 'Responsive Portfolio',
-      course: 'Web Development 101',
-      dueDate: '2023-06-15',
-      status: 'in-progress',
-      progress: 65,
-      branch: 'portfolio-assignment'
-    },
-    {
-      id: 2,
-      title: 'JavaScript Calculator',
-      course: 'JavaScript Fundamentals',
-      dueDate: '2023-06-10',
-      status: 'submitted',
-      feedback: 'Pending review',
-      branch: 'js-calculator'
-    },
-    {
-      id: 3,
-      title: 'React Todo App',
-      course: 'React Basics',
-      dueDate: '2023-05-28',
-      status: 'rejected',
-      feedback: 'State management needs improvement',
-      branch: 'react-todo'
-    },
-    {
-      id: 4,
-      title: 'Node.js API',
-      course: 'Backend Development',
-      dueDate: '2023-05-20',
-      status: 'completed',
-      score: '95/100',
-      branch: 'node-api'
+const LearnersDashboard = () => {
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [assignments, setAssignments] = useState([]);
+  const [error, setError] = useState(null);
+  const { isLoading, setIsLoading } = useOutletContext();
+
+  // Fetch assignments from backend with filter
+  const fetchAssignments = async (filter) => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('jwt token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      let endpoint = 'http://localhost:8081/api/user/assignments';
+      if (filter && filter !== 'All') {
+        endpoint += `?status=${encodeURIComponent(filter)}`;
+      }
+
+      const response = await axios.get(endpoint, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      setAssignments(response.data);
+      setError(null);
+    } catch (err) {
+      if (err.response) {
+        setError(err.response.data.message);
+      } else if (err.request) {
+        setError('No response from server. Please try again later.');
+      } else {
+        setError(err.message);
+      }
+      setAssignments([]); // Ensure assignments are cleared on error
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
 
-  const filteredAssignments = assignments.filter(assignment => {
-    if (activeFilter === 'all') return true;
-    return assignment.status === activeFilter;
-  });
+  const handleEdit = (assignmentId) => {
+    console.log(`Editing assignment: ${assignmentId}`);
+    // navigate(`/assignments/${assignmentId}/edit`); // Assuming navigate is available from react-router-dom
+  };
+
+  const handleSubmit = async (assignmentId) => {
+    console.log(`Submitting assignment: ${assignmentId}`);
+    try {
+      // Replace with your actual API base URL
+      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      await axios.put(`${API_BASE_URL}/${assignmentId}/submit`);
+      alert(`Assignment ${assignmentId} submitted successfully!`);
+      fetchAssignments(activeFilter);
+    } catch (err) {
+      console.error(`Error submitting assignment ${assignmentId}:`, err);
+      alert(`Failed to submit assignment ${assignmentId}. Error: ${err.message}`);
+    }
+  };
+
+  const handleView = (assignmentId) => {
+    console.log(`Viewing assignment: ${assignmentId}`);
+    // navigate(`/assignments/${assignmentId}/view`); // Assuming navigate is available from react-router-dom
+  };
+
+  const handleResubmit = async (assignmentId) => {
+    console.log(`Resubmitting assignment: ${assignmentId}`);
+    try {
+      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      await axios.put(`${API_BASE_URL}/${assignmentId}/resubmit`);
+      alert(`Assignment ${assignmentId} resubmitted!`);
+      fetchAssignments(activeFilter);
+    } catch (err) {
+      console.error(`Error resubmitting assignment ${assignmentId}:`, err);
+      alert(`Failed to resubmit assignment ${assignmentId}. Error: ${err.message}`);
+    }
+  };
+
+  const handleClaim = async (assignmentId) => {
+    console.log(`Claiming assignment: ${assignmentId}`);
+    try {
+      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      // You'll need to define currentReviewerId and currentReviewerName
+      // For demonstration, I'm using placeholders.
+      const currentReviewerId = 'reviewer123';
+      const currentReviewerName = 'John Doe';
+      await axios.post(`${API_BASE_URL}/${assignmentId}/claim`, {
+        reviewerId: currentReviewerId,
+        reviewerName: currentReviewerName
+      });
+      alert(`Assignment ${assignmentId} claimed by ${currentReviewerName}!`);
+      fetchAssignments(activeFilter);
+    } catch (err) {
+      console.error(`Error claiming assignment ${assignmentId}:`, err);
+      alert(`Failed to claim assignment ${assignmentId}. Error: ${err.message}`);
+    }
+  };
+
+  const handleReclaim = async (assignmentId) => {
+    console.log(`Reclaiming assignment: ${assignmentId}`);
+    try {
+      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      // You'll need to define currentReviewerId and currentReviewerName
+      const currentReviewerId = 'reviewer123';
+      const currentReviewerName = 'John Doe';
+      await axios.post(`${API_BASE_URL}/${assignmentId}/reclaim`, {
+        reviewerId: currentReviewerId,
+        reviewerName: currentReviewerName
+      });
+      alert(`Assignment ${assignmentId} reclaimed by ${currentReviewerName}!`);
+      fetchAssignments(activeFilter);
+    } catch (err) {
+      console.error(`Error reclaiming assignment ${assignmentId}:`, err);
+      alert(`Failed to reclaim assignment ${assignmentId}. Error: ${err.message}`);
+    }
+  };
+
+  // Fetch assignments when activeFilter changes
+  useEffect(() => {
+    fetchAssignments(activeFilter);
+    // eslint-disable-next-line
+  }, [activeFilter]);
+
+  useEffect(() => {
+    console.log('Current loading state:', isLoading);
+  }, [isLoading]);
 
   return (
     <DashboardContainer>
@@ -57,64 +140,78 @@ const AssignmentsDashboard = () => {
           <Title>Welcome, Kufre Edward</Title>
           <WelcomeParagraph>This space is for specific information</WelcomeParagraph>
         </WelcomeContainer>
-
-        
-
         <FilterControls>
-          <FilterButton 
-            active={activeFilter === 'all'}
-            onClick={() => setActiveFilter('all')}
+          <FilterButton
+            active={activeFilter === 'All'}
+            onClick={() => setActiveFilter('All')}
           >
             All
           </FilterButton>
-          <FilterButton 
-            active={activeFilter === 'in-progress'}
-            onClick={() => setActiveFilter('in-progress')}
+          <FilterButton
+            active={activeFilter === 'Pending Submission'}
+            onClick={() => setActiveFilter('Pending Submission')}
           >
             In Progress
           </FilterButton>
-          <FilterButton 
-            active={activeFilter === 'submitted'}
-            onClick={() => setActiveFilter('submitted')}
+          <FilterButton
+            active={activeFilter === 'Submitted'}
+            onClick={() => setActiveFilter('Submitted')}
           >
             Submitted
           </FilterButton>
-          <FilterButton 
-            active={activeFilter === 'completed'}
-            onClick={() => setActiveFilter('completed')}
+          <FilterButton
+            active={activeFilter === 'Completed'}
+            onClick={() => setActiveFilter('Completed')}
           >
             Completed
           </FilterButton>
+          <FilterButton
+            active={activeFilter === 'Resubmitted'}
+            onClick={() => setActiveFilter('Resubmitted')}
+          >
+            Resubmitted
+          </FilterButton>
         </FilterControls>
+        {/* Conditional rendering for "No assignment found" */}
+        {!isLoading && assignments.length === 0 && (
+          <TextMessage>No assignment found under this filter.</TextMessage>
+        )}
       </DashboardHeader>
 
-      <AssignmentGrid>
-        {filteredAssignments.map(assignment => (
-          <AssignmentCard 
-          key={assignment.id} 
-          status={assignment.status}
-          title={assignment.title}
-          course ={assignment.course}
-          branch={assignment.branch}
-          description={assignment.description}
-          progress={assignment.progress}
-          feedback={assignment.feedback}
-          dueDate ={assignment.dueDate}
-          
-          >
-            
-          </AssignmentCard>
-        ))}
-      </AssignmentGrid>
-
-
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <AssignmentGrid>
+          {assignments.map(assignment => (
+            <AssignmentCard
+              key={assignment.id}
+              submittedDate={assignment.createdAt}
+              ReviewedDate={assignment.reviewedAt}
+              branch={assignment.branch}
+              reviewer={assignment.codeReviewerName}
+              learner={assignment.learnerName}
+              gitHubURL={assignment.githubUrl}
+              videoUrl={assignment.reviewVideoUrl}
+              status={assignment.status}
+              assignmentNumber={assignment.assignmentNumber}
+              involved={"learner"}
+              onEditClick={handleEdit}
+              onSubmitClick={handleSubmit}
+              onViewClick={handleView}
+              onResubmitClick={handleResubmit}
+              onClaimClick={handleClaim}
+              onReclaimClick={handleReclaim}
+            />
+          ))}
+        </AssignmentGrid>
+      )}
     </DashboardContainer>
   );
 };
 
-// Styled Components
 
- export const DashboardContainer = styled.div`
+
+export const DashboardContainer = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -146,6 +243,8 @@ const FilterButton = styled.button`
   padding: 0.5rem 1rem;
   border-radius: 20px;
   border: none;
+  font-weight: 550;
+  
   background-color: ${({ active }) => active ? '#4361ee' : '#f1f3f5'};
   color: ${({ active }) => active ? 'white' : '#495057'};
   cursor: pointer;
@@ -183,4 +282,15 @@ const WelcomeParagraph = styled.p`
   line-height: 1.4; /* Improves readability for wrapped text */
 `;
 
-export default AssignmentsDashboard;
+
+const TextMessage = styled.div`
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid transparent;
+  `;
+
+export default LearnersDashboard;

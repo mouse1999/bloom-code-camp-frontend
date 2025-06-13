@@ -1,7 +1,7 @@
-
 import styled from 'styled-components';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LoginContainer = styled.div`
   display: flex;
@@ -22,6 +22,17 @@ const LoginFormWrapper = styled.div`
     padding: 1.5rem;
     margin: 1rem;
   }
+
+  @media (max-width: 480px) {
+    max-width: 22rem;
+    padding: 1rem;
+  }
+
+  @media (max-width: 360px) {
+    max-width: 18rem;
+    padding: 0.5rem;
+    margin: 0.5rem;
+  }
 `;
 
 const LoginHeader = styled.h2`
@@ -39,8 +50,8 @@ const InputGroup = styled.div`
 const InputLabel = styled.label`
   display: block;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: #64748b;
+  font-weight: 550;
+  color: #374151;
   margin-bottom: 0.5rem;
 `;
 
@@ -50,6 +61,7 @@ const InputField = styled.input`
   border: 1px solid #e2e8f0;
   border-radius: 0.375rem;
   font-size: 1rem;
+  box-sizing: border-box;
   transition: border-color 0.2s;
 
   &:focus {
@@ -62,8 +74,8 @@ const InputField = styled.input`
 const SubmitButton = styled.button`
   width: 100%;
   padding: 0.75rem;
-  background-color: #2563eb;
-  color: inherit;
+  background-color: #3b82f6;
+  color: white;
   font-weight: 500;
   border: none;
   border-radius: 0.375rem;
@@ -113,42 +125,50 @@ function LoginPage() {
     setError('');
 
     try {
-        const response = await fetch('http://localhost:8080/api/auth/login', {
-            method: 'POST',
-            mode: 'cors', // Explicitly enable CORS
-            credentials: 'include', // If using cookies
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json' // Explicitly request JSON
-            },
-                    body: JSON.stringify({ username, password })
-                });
     
-          // 2. Handle non-OK responses
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Login failed');
+      const response = await axios.post(
+          'http://localhost:8081/api/users/login',
+          { username, password },
+          {
+              withCredentials: true, // Equivalent to credentials: 'include' for cookies
+              headers: {
+                  'Accept': 'application/json' 
+              }
           }
-    
-          // 3. Extract JWT from response
-          const data = await response.json();
-          localStorage.setItem('jwtToken', data.token);
-    
+      );
 
-      // On successful login
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    
+      const data = response.data;
+      localStorage.setItem('jwt token', data.token); 
+
+      navigate('/learner');
+
+  } catch (err) {
+      console.error('Login error:', err);
+
+      if (err.response) {
+          console.error('Error data:', err.response.data);
+          console.error('Error status:', err.response.status);
+          console.error('Error headers:', err.response.headers);
+          setError(err.response.data.message || 'Login failed. Please check your credentials.');
+      } else if (err.request) {
+          console.error('Error request:', err.request);
+          setError('No response from server. Please try again later.');
+      } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error('Error message:', err.message);
+          setError('An unexpected error occurred. ' + err.message);
+      }
+  } finally {
+      setIsLoading(false); 
+  }
   };
 
   return (
     <LoginContainer>
       <LoginFormWrapper>
 
-        <LoginHeader>Welcome back</LoginHeader>
+        <LoginHeader>Login to Dashboard</LoginHeader>
         
         <form onSubmit={handleSubmit}>
           <InputGroup>

@@ -368,7 +368,7 @@ const PrimaryAction = styled(Button)`
 
   &:hover {
     background: linear-gradient(135deg, #5a5af1, #3070f3);
-    transform: translateY(-1px);
+    transform: translateY(-1px);s
     box-shadow: 0 0.375rem 0.625rem rgba(99, 102, 241, 0.25);
   }
 

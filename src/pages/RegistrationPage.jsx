@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const RegistrationPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
+    userName: '',
     password: '',
     confirmPassword: '',
     role: 'LEARNER'
@@ -16,6 +16,8 @@ const RegistrationPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(false);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,17 +34,17 @@ const RegistrationPage = () => {
   const validate = () => {
     const newErrors = {};
     
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
+    if (!formData.userName.trim()) {
+      newErrors.userName = 'Username is required';
+    } else if (formData.userName.length < 3) {
+      newErrors.userName = 'Username must be at least 3 characters';
     }
     
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
+    // if (!formData.email.trim()) {
+    //   newErrors.email = 'Email is required';
+    // } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    //   newErrors.email = 'Please enter a valid email';
+    // }
     
     if (!formData.password) {
       newErrors.password = 'Password is required';
@@ -74,64 +76,71 @@ const RegistrationPage = () => {
     setIsSubmitting(true);
     
     try {
-      // Remove confirmPassword from the data sent to backend
+      
       const { confirmPassword, ...registrationData } = formData;
-      
-      const response = await fetch('http://localhost:8080/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registrationData),
-      });
+      console.log(registrationData);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Registration failed');
-      }
+      const response = await axios.post('http://localhost:8081/api/users/register', registrationData);
 
-      // Registration successful
-      navigate('/login', { state: { registrationSuccess: true } });
-      
+      setIsRegistrationSuccessful(true);
+
+      setTimeout(() => {
+        console.log("Delay finished, navigating to login...");
+        // Optionally, hide the success message after the delay if you want
+        // setIsRegistrationSuccessful(false); 
+        navigate('/login');
+    },1000);
+
+
+
+      console.log('Registration successful:', response.data);
+  
+
     } catch (error) {
       console.error('Registration error:', error);
-      setSubmitError(error.message);
+      // Axios errors have a `response` object if the server responded with an error status
+      if (error.response) {
+
+        console.error('Error data:', error.response.data);
+        console.error('Error status:', error.response.status);
+        console.error('Error headers:', error.response.headers);
+        setSubmitError(error.response.data.message || 'Registration failed');
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Error request:', error.request);
+        setSubmitError('No response from server. Please try again later.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error message:', error.message);
+        setSubmitError(error.message || 'An unexpected error occurred.');
+      }
     } finally {
       setIsSubmitting(false);
+      
+
+
     }
   };
 
   return (
     <RegistrationContainer>
       <FormContainer>
-        <Title>Create Account</Title>
+        <Title>Registration Page</Title>
         
         <StyledForm onSubmit={handleSubmit}>
           <FormGroup>
             <Label>Username</Label>
             <Input
-              name="username"
+              name="userName"
               type="text"
-              value={formData.username}
+              value={formData.userName}
               onChange={handleChange}
               placeholder="Enter username"
-              hasError={!!errors.username}
+              hasError={!!errors.userName}
             />
-            {errors.username && <ErrorText>{errors.username}</ErrorText>}
+            {errors.username && <ErrorText>{errors.userName}</ErrorText>}
           </FormGroup>
 
-          <FormGroup>
-            <Label>Email</Label>
-            <Input
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter email"
-              hasError={!!errors.email}
-            />
-            {errors.email && <ErrorText>{errors.email}</ErrorText>}
-          </FormGroup>
 
           <FormGroup>
             <Label>Password</Label>
@@ -157,6 +166,7 @@ const RegistrationPage = () => {
               hasError={!!errors.confirmPassword}
             />
             {!passwordMatch && <ErrorText>{errors.confirmPassword}</ErrorText>}
+            
           </FormGroup>
 
           <FormGroup>
@@ -194,6 +204,7 @@ const RegistrationPage = () => {
           </FormGroup>
 
           {submitError && <SubmitError>{submitError}</SubmitError>}
+          {isRegistrationSuccessful && <SuccessText>Registraton Successful</SuccessText>}
 
           <SubmitButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Registering...' : 'Register'}
@@ -213,7 +224,7 @@ const RegistrationContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 95vh;
   background-color: #f8fafc;
   padding: 2rem;
 `;
@@ -336,6 +347,13 @@ const LoginLink = styled.div`
   text-align: center;
   font-size: 0.875rem;
   color: #64748b;
+`;
+
+const SuccessText = styled.div`
+color: #228B22 ;
+  text-align: center;
+  font-size: 0.875rem;
+
 `;
 
 export default RegistrationPage;

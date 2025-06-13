@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SearchBar from '../ui/SearchBar';
 import { useEffect } from 'react';
+import axios from 'axios';
 import { 
   faUser, 
   faCog, 
@@ -12,7 +13,12 @@ import {
   faCaretDown
 } from '@fortawesome/free-solid-svg-icons';
 
-const Header = ({activeHeaderTitle}) => {
+const Header = ({activeHeaderTitle,
+  handleLogout,
+  userData
+
+
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileView, setIsMobileView] = useState(false);
@@ -49,24 +55,27 @@ const Header = ({activeHeaderTitle}) => {
             <UserAvatar>
               <FontAwesomeIcon icon={faUserCircle} />
             </UserAvatar>
-            <UserName>Kufre Edward</UserName>
+            <UserName>{userData.username || "User"}</UserName>
             <FontAwesomeIcon icon={faCaretDown} />
           </UserButton>
           
           <UserDropdown isOpen={isDropdownOpen} isMobileView={isMobileView}>
-            <DropdownItem href="#">
+            <DropdownItem >
               <DropdownIcon icon={faUser} />
               Profile
             </DropdownItem>
-            <DropdownItem href="#">
+            <DropdownItem >
               <DropdownIcon icon={faCog} />
               Settings
             </DropdownItem>
-            <DropdownItem href="#">
+            <DropdownItem >
               <DropdownIcon icon={faQuestionCircle} />
               Help
             </DropdownItem>
-            <DropdownItem href="#">
+            <DropdownItem
+            onClick={handleLogout}
+            
+            >
               <DropdownIcon icon={faSignOutAlt} />
               Logout
             </DropdownItem>

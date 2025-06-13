@@ -23,6 +23,8 @@ import Header from "./components/Header/Header";
 import SideMenu from "./components/SideMenu/SideMenu";
 import DashboardLayoutForLearners from "./pages/DashboardLayoutForLearners";
 import DashboardLayoutForReviewer from "./components/Dashboard/Reviewer/DashboardLayoutForReviewer";
+import LearnersDashboard from "./components/Dashboard/Learner/LearnersDashboard";
+import CreateNewAssignment from "./components/Dashboard/Learner/CreateNewAssignment";
 
 
 
@@ -38,10 +40,17 @@ function App() {
     return(
         <BrowserRouter>
       <Routes>
-        <Route path="/" element={<DashboardLayoutForReviewer/>}>
-          <Route index element={<SubmitAssignmentForm />} />
-          <Route path="/login" element={<LoginPage/>}/>
+        < Route path="/learner" element={<DashboardLayoutForLearners/>}>
+          <Route index element={<LearnersDashboard/>} />
+          {/* <Route path="/learner/login" element={<LoginPage/>}/> */}
+          <Route path="/learner/create" element={<CreateNewAssignment/>}/>
         </Route>
+        <Route path="/register" element={<RegistrationPage/>}/>
+        <Route path="/login" element={<LoginPage/>}/>
+        
+
+
+        
       </Routes>
     </BrowserRouter>
     );

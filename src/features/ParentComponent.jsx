@@ -44,16 +44,9 @@ function ParentComponent() {
             assignments={assignments}
             onClose={() => setShowPopup(false)}
             onSubmit={handleSubmitAssignment}
-            onSelectAssignment={getSelectedAssignment}
             onChoose={onChoose}
           />
         )}
-        {
-            assignmentSelected && (
-                <AssignmentForm></AssignmentForm>
-            )
-        }
-        
         
       </div>
     );
