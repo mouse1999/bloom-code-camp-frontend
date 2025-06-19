@@ -23,7 +23,9 @@ const BackLinkToDashboard = () => {
 
 
     return(
-        <BackLinkWrapper>
+        <BackLinkWrapper
+        to="/learner"
+        >
             <FontAwesomeIcon icon={faArrowLeft} /> Back to Dashboard
         </BackLinkWrapper>
     );

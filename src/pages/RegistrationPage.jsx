@@ -48,8 +48,8 @@ const RegistrationPage = () => {
     
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
     }
     
     if (!formData.confirmPassword) {
@@ -86,8 +86,8 @@ const RegistrationPage = () => {
 
       setTimeout(() => {
         console.log("Delay finished, navigating to login...");
-        // Optionally, hide the success message after the delay if you want
-        // setIsRegistrationSuccessful(false); 
+        //hide the success message after the delay 
+        setIsRegistrationSuccessful(false); 
         navigate('/login');
     },1000);
 

@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import AssignmentCard from './AssignmentCard';
 import LoadingSpinner from '../../ui/LoadingSpinner';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
 
 const LearnersDashboard = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [assignments, setAssignments] = useState([]);
   const [error, setError] = useState(null);
   const { isLoading, setIsLoading } = useOutletContext();
+  const navigate = useNavigate();
 
   // Fetch assignments from backend with filter
   const fetchAssignments = async (filter) => {
@@ -49,7 +51,7 @@ const LearnersDashboard = () => {
 
   const handleEdit = (assignmentId) => {
     console.log(`Editing assignment: ${assignmentId}`);
-    // navigate(`/assignments/${assignmentId}/edit`); // Assuming navigate is available from react-router-dom
+    navigate(`/learner/assignments/${assignmentId}/edit`); // Assuming navigate is available from react-router-dom
   };
 
   const handleSubmit = async (assignmentId) => {
@@ -68,7 +70,7 @@ const LearnersDashboard = () => {
 
   const handleView = (assignmentId) => {
     console.log(`Viewing assignment: ${assignmentId}`);
-    // navigate(`/assignments/${assignmentId}/view`); // Assuming navigate is available from react-router-dom
+    navigate(`/learner/assignments/${assignmentId}/view`); // Assuming navigate is available from react-router-dom
   };
 
   const handleResubmit = async (assignmentId) => {
@@ -185,6 +187,7 @@ const LearnersDashboard = () => {
           {assignments.map(assignment => (
             <AssignmentCard
               key={assignment.id}
+              id={assignment.id}
               submittedDate={assignment.createdAt}
               ReviewedDate={assignment.reviewedAt}
               branch={assignment.branch}

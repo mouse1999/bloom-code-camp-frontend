@@ -36,7 +36,7 @@ const LoadingText = styled.div`
 `;
 
 const LoadingSpinner = ({
-  fullPage = false,
+  fullPage,
   size,
   thickness,
   color,

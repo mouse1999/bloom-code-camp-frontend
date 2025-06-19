@@ -6,6 +6,7 @@ import AssignmentDetailItem from "../../ui/AssignmentDetailItem";
 import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import axios from 'axios';
 
 
 import {
@@ -261,84 +262,13 @@ padding: 0.75rem 1.5rem;
 
 `;
 
-// Mock API call 
-const mockFetchAssignmentFromDB = async (id) => {
 
-    await new Promise(resolve => setTimeout(resolve, 500));
-  
-    // Simulated data
-    const assignments = [
-      {
-        id: "assign-123",
-        title: "React Hooks Deep Dive",
-        githubUrl: "https://github.com/user/react-hooks-example",
-        branch: "main",
-        submittedAt: "2024-05-20T10:00:00Z",
-        reviewedAt: "2024-05-22T14:30:00Z",
-        reviewerId: "reviewer-456",
-        learner: "Jen",
-        dueDate: "2024-05-25T23:59:59Z",
-        status: "Completed",
-        notes: "All tests passed, good use of custom hooks."
-      },
-      {
-        id: "assign-456",
-        title: "Spring Boot Microservices",
-        githubUrl: "https://github.com/anotheruser/spring-microservices",
-        branch: "feature/auth",
-        submittedAt: "2024-05-18T09:15:00Z",
-        reviewedAt: null,
-        learner: "Jen",
-        reviewerId: null,
-        dueDate: "2024-05-28T23:59:59Z",
-        status: "Submitted",
-        notes: "Waiting for review."
-      },
-      {
-        id: "assign-789",
-        title: "Python Data Analysis",
-        githubUrl: "https://github.com/datauser/python-analysis",
-        branch: "master",
-        submittedAt: "2024-05-10T11:00:00Z",
-        learner: "Jen",
-        reviewedAt: "2024-05-12T16:00:00Z",
-        reviewerId: "reviewer-789",
-        dueDate: "2024-05-15T23:59:59Z",
-        status: "Needs Update",
-        notes: "Needs more robust error handling for data parsing."
-      },
-      {
-        id: "assign-012",
-        title: "Basic HTML/CSS Landing Page",
-        githubUrl: "https://github.com/beginner/landing-page",
-        branch: "main",
-        submittedAt: null,
-        learner: "Jen",
-        reviewedAt: null,
-        reviewerId: null,
-        dueDate: "2024-06-05T23:59:59Z",
-        status: "Pending Submission",
-        notes: "Still working on responsiveness."
-      }
-    ];
-  
-    return assignments.find(assignment => assignment.id === id);
-  };
-  
+
+export default function AssignmentReviewPage() {
 
 
 
-
-
-
-
-
-
-export default function ReviewerAssignmentView() {
-
-
-
-    const { assignmentId = "assign-456" } = useParams();
+    const { assignmentId} = useParams();
 
   const [assignmentDetail, setAssignmentDetail] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -402,41 +332,65 @@ export default function ReviewerAssignmentView() {
 
 
   useEffect(() => {
-    const fetchAndProcessAssignment = async () => {
-      try {
-        setLoading(true);
-        setError(null); 
+        const fetchAndProcessAssignment = async (id) => {
+            try {
+                setLoading(true); // Start loading
+                setError(null);   // Clear previous errors
 
-    
-        if (!assignmentId) {
-          setError("Assignment ID is missing from the URL.");
-          setLoading(false);
-          return;
-        }
+                if (!assignmentId) {
+                    setError("Assignment ID is missing from the URL.");
+                    setLoading(false);
+                    return;
+                }
 
-        const rawData = await mockFetchAssignmentFromDB(assignmentId);
+                const token = localStorage.getItem('jwt token');
+                if (!token) {
+                    setError('Authentication required. Please log in.');
+                    setLoading(false);
+                    return;
+                }
 
-        if (rawData) {
-          setAssignment(rawData); 
-          const processedData = processAssignmentForDisplay(rawData);
-          setAssignmentDetail(processedData);
-        } else {
-          setAssignment({}); 
-          setAssignmentDetail([]);
-          setError(`Assignment with ID "${assignmentId}" not found.`);
-        }
-      } catch (err) {
-        console.error("Error fetching or processing assignment:", err);
-        setError("Failed to load assignment details. Please try again.");
-        setAssignment({}); 
-        setAssignmentDetail([]); 
-      } finally {
-        setLoading(false);
-      }
-    };
+                // Await the axios call to get the actual data
+                const response = await axios.get(`http://localhost:8081/api/user/assignments/${assignmentId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    withCredentials: true
+                });
+                
+                const rawData = response.data; // This now holds the actual data
+                console.log("Fetched raw data:", rawData); // For debugging
+                
+                if (rawData) {
+                  setAssignment(rawData);
+                  
+                    const processedData = processAssignmentForDisplay(rawData);
+                    setAssignmentDetail(processedData); // Store processed details for rendering
+                } else {
+                    // setAssignment({}); 
+                    setAssignmentDetail([]);
+                    setError(`Assignment with ID "${id}" not found.`); // Use 'id' here
+                }
+            } catch (err) {
+                console.error("Error fetching or processing assignment:", err);
+                let errorMessage = "Failed to load assignment details. Please try again.";
+                if (err.response) {
+                    errorMessage = err.response.data.message || errorMessage;
+                } else if (err.request) {
+                    errorMessage = "No response from server. Check your internet connection.";
+                } else {
+                    errorMessage = err.message;
+                }
+                setError(errorMessage);
+                // setAssignment({}); 
+                setAssignmentDetail([]); 
+            } finally {
+                setLoading(false); // End loading
+            }
+        };
 
-    fetchAndProcessAssignment();
-  }, [assignmentId]); // Re-run effect if assignmentId changes in the URL
+        fetchAndProcessAssignment(assignmentId);
+    }, [assignmentId]); 
 
   
 //   if (loading) {
@@ -475,16 +429,68 @@ export default function ReviewerAssignmentView() {
       ...prev,
       [name]: value
     }));
-
-
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Add your form submission logic here
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
 
   }
+
+
+  const validate = () => {
+        const newErrors = {};
+        if (!formData.video.trim()) {
+            newErrors.video = 'Video URL is required';
+        }
+        setError(newErrors);
+      
+        return Object.keys(newErrors).length === 0;
+    };
+
+  const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmissionMessage(null);
+
+        if (!validate()) {
+            setSubmissionMessage({ type: 'error', message: 'Please fix the errors in the form before submitting.' });
+            return;
+        }
+
+        // Ensure an assignmentId is present and details are fetched for updating
+        if (!assignmentId ) {
+            setSubmissionMessage({ type: 'error', message: 'Assignment Not Found' });
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const token = localStorage.getItem('jwt token');
+            if (!token) {
+                setSubmissionMessage({ type: 'error', message: 'Authentication required to update.' });
+                setIsSubmitting(false);
+                return;
+            }
+
+            
+            await axios.post(`http://localhost:8081/api/user/assignments/${assignmentId}/submit`, formData, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            setSubmissionMessage({ type: 'success', message: 'Assignment Reviewed successfully!' });
+            
+            // navigate('/learner'); 
+
+        } catch (error) {
+            console.error(`Error updating assignment:`, error);
+            let errorMessage = `Failed to review the assignment. Please try again.`;
+            if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.request) {
+                errorMessage = 'No response from server. Check your internet connection.';
+            } else {
+                errorMessage = error.message;
+            }
+            setSubmissionMessage({ type: 'error', message: errorMessage });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
 
   return (

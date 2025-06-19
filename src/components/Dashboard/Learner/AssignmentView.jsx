@@ -1,10 +1,11 @@
 import styled from "styled-components";
 import BackLinkToDashboard from "../../ui/BackLinkToDashboard";
-import { DashboardContainer } from "./LearnersDashboard";
+import { DashboardContainer, DashboardHeader, Title  } from "./LearnersDashboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AssignmentDetailItem from "../../ui/AssignmentDetailItem";
 import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
+
 
 import {
   faCheckCircle,
@@ -12,8 +13,10 @@ import {
   faExclamationCircle,
   faInfoCircle,
   faUserCircle,
-  faCodeBranch, 
+  faCodeBranch,
+  faCommentDots, 
    faVideo,
+   faHashtag,
   faCalendarAlt, 
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
@@ -27,7 +30,7 @@ const AssignmentViewContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
   padding: 2rem;
-  max-width: 900px;
+  max-width: 700px;
   margin: 0 auto;
 `;
 
@@ -135,29 +138,10 @@ font-weight: 500;
 
 
 
-// Fetch assignment from backend using axios
-const fetchAssignmentFromDB = async (id) => {
-  const token = localStorage.getItem('jwt token');
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
-
-  // Replace with your actual API endpoint
-  const endpoint = `YOUR_API_ENDPOINT_HERE/${id}`;
-
-  const response = await axios.get(endpoint, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-
-  return response.data;
-};
-
 
 const AssignmentView = () => {
 
-  const { assignmentId = "assign-456" } = useParams();
+  const { assignmentId} = useParams();
 
   const [assignmentDetail, setAssignmentDetail] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -173,10 +157,14 @@ const AssignmentView = () => {
       "Submitted Date": { value: assignmentData.submittedAt, icon: faCalendarAlt },
       "Reviewed Date": { value: assignmentData.reviewedAt, icon: faCalendarAlt },
       "Branch": { value: assignmentData.branch, icon: faCodeBranch },
-      "Reviewer": { value: assignmentData.reviewerId, icon: faUsers },
+      "Reviewer": { value: assignmentData.codeReviewerName, icon: faUsers },
+      "Learner" : { value: assignmentData.learnerName, icon: faUsers },
       "GitHub Repository URL": { value: assignmentData.githubUrl, icon: faClock },
-      "Due Date": { value: assignmentData.dueDate, icon: faCalendarAlt }, // Added DueDate
-      "Notes": { value: assignmentData.notes, icon: faInfoCircle }, // Added Notes
+      "Video Url": { value: assignmentData.reviewVideoUrl, icon: faVideo },
+      // "Status": { value: assignmentData.status, icon:   }
+      "Assignment Number": { value: assignmentData.assignmentNumber, icon: faHashtag   },
+      // "Due Date": { value: assignmentData.dueDate, icon: faCalendarAlt }, // Added DueDate
+      // "Notes": { value: assignmentData.notes, icon: faInfoCircle }, // Added Notes
     };
 
     for (const label in assignmentMapping) {
@@ -217,41 +205,64 @@ const AssignmentView = () => {
 
 
   useEffect(() => {
-    const fetchAndProcessAssignment = async () => {
-      try {
-        setLoading(true);
-        setError(null); 
+        const fetchAndProcessAssignment = async (id) => {
+            try {
+                setLoading(true); // Start loading
+                setError(null);   // Clear previous errors
 
-    
-        if (!assignmentId) {
-          setError("Assignment ID is missing from the URL.");
-          setLoading(false);
-          return;
-        }
+                if (!id) {
+                    setError("Assignment ID is missing from the URL.");
+                    setLoading(false);
+                    return;
+                }
 
-        const rawData = fetchAssignmentFromDB(assignmentId);
+                const token = localStorage.getItem('jwt token');
+                if (!token) {
+                    setError('Authentication required. Please log in.');
+                    setLoading(false);
+                    return;
+                }
 
-        if (rawData) {
-          setAssignment(rawData); 
-          const processedData = processAssignmentForDisplay(rawData);
-          setAssignmentDetail(processedData);
-        } else {
-          setAssignment({}); 
-          setAssignmentDetail([]);
-          setError(`Assignment with ID "${assignmentId}" not found.`);
-        }
-      } catch (err) {
-        console.error("Error fetching or processing assignment:", err);
-        setError("Failed to load assignment details. Please try again.");
-        setAssignment({}); 
-        setAssignmentDetail([]); 
-      } finally {
-        setLoading(false);
-      }
-    };
+                // Await the axios call to get the actual data
+                const response = await axios.get(`http://localhost:8081/api/user/assignments/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    withCredentials: true
+                });
+                
+                const rawData = response.data; // This now holds the actual data
+                console.log("Fetched raw data:", rawData); // For debugging
+                
+                if (rawData) {
+                    setAssignment(rawData); // Store the raw fetched object
+                    const processedData = processAssignmentForDisplay(rawData);
+                    setAssignmentDetail(processedData); // Store processed details for rendering
+                } else {
+                    setAssignment({}); 
+                    setAssignmentDetail([]);
+                    setError(`Assignment with ID "${id}" not found.`); // Use 'id' here
+                }
+            } catch (err) {
+                console.error("Error fetching or processing assignment:", err);
+                let errorMessage = "Failed to load assignment details. Please try again.";
+                if (err.response) {
+                    errorMessage = err.response.data.message || errorMessage;
+                } else if (err.request) {
+                    errorMessage = "No response from server. Check your internet connection.";
+                } else {
+                    errorMessage = err.message;
+                }
+                setError(errorMessage);
+                setAssignment({}); 
+                setAssignmentDetail([]); 
+            } finally {
+                setLoading(false); // End loading
+            }
+        };
 
-    fetchAndProcessAssignment();
-  }, [assignmentId]); // Re-run effect if assignmentId changes in the URL
+        fetchAndProcessAssignment(assignmentId);
+    }, [assignmentId]); 
 
   
 //   if (loading) {
@@ -274,6 +285,17 @@ const AssignmentView = () => {
     );
   }
 
+  if (loading) {
+        return (
+          <LoadingSpinner
+          speed="3s"
+          text="Loading details..."
+          textColor="blue"
+          />
+        
+        );
+    }
+
   if (!assignment || Object.keys(assignment).length === 0) {
     return (
       <DashboardContainer>
@@ -283,17 +305,22 @@ const AssignmentView = () => {
       </DashboardContainer>
     );
   }
+  
 
   return (
     <DashboardContainer>
       <>
-      <LoadingSpinner isLoading={loading}></LoadingSpinner>
+      <DashboardHeader>
+                <Title>Assignment View Page</Title> {/* Static Title for Editing */}
+      </DashboardHeader>
+      
 
-        <BackLinkToDashboard />
+        {/* <BackLinkToDashboard /> */}
         <AssignmentViewContainer>
+          <BackLinkToDashboard />
           <Header>
             
-            <h2>{assignment.title || 'Assignment Details'}</h2>
+            <h2>{assignment.assignmentType || 'Assignment Details'}</h2>
         
             <StatusBadge status={assignment.status}>
               {assignment.status === 'Pending Submission' && <FontAwesomeIcon icon={faClock} />}
@@ -301,6 +328,7 @@ const AssignmentView = () => {
               {assignment.status === 'In Review' && <FontAwesomeIcon icon={faClock} />}
               {assignment.status === 'Completed' && <FontAwesomeIcon icon={faCheckCircle} />}
               {assignment.status === 'Needs Update' && <FontAwesomeIcon icon={faExclamationCircle} />} 
+              {assignment.status === 'Resubmitted' && <FontAwesomeIcon icon={faExclamationCircle} />} 
               {assignment.status }
             </StatusBadge>
           </Header>
@@ -325,19 +353,46 @@ const AssignmentView = () => {
             <h3>Review Video</h3>
           </SectionTitle>
           <VideoContainer>
+            {assignment.reviewVideoUrl ? (
+                              <iframe
+                                  width="100%"
+                                  height="315"
+                                  src={assignment.reviewVideoUrl.replace("watch?v=", "embed/")} // Converts YouTube watch URL to embed URL
+                                  title="Assignment Review Video"
+                                  frameBorder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                              ></iframe>
+                          ) : (
+                              <InfoMessage $type="info">
+                                  <FontAwesomeIcon icon={faInfoCircle} /> No review video available for this assignment yet.
+                              </InfoMessage>
+                          )
+            }
 
           </VideoContainer>
 
           <SectionTitle>
-            <FontAwesomeIcon icon={faSignalMessenger} color="#4361ee"/>
+            <FontAwesomeIcon icon={faCommentDots} color="#4361ee"/>
             <h3>Feedback</h3>
 
           </SectionTitle>
           <FeedbackContainer>
-            <h4>Feedback Comment:</h4>
-            <p>This is first paragraph</p>
-            <p>This is second paragraph</p>
+            {
+              (assignment.notes && !assignment.reviewVideoUrl) ? ( // If notes are there but not a video URL (might be feedback)
+                            <>
+                                <h4>Notes:</h4>
+                                {assignment.notes.split('\n').map((paragraph, index) => (
+                                    <p key={index}>{paragraph}</p>
+                                ))}
+                            </>
+                        ) : (
+                            <InfoMessage $type="info">
+                                <FontAwesomeIcon icon={faInfoCircle} /> No feedback comments available for this assignment yet.
+                            </InfoMessage>
+                        )
 
+            }
           </FeedbackContainer>
 
 
@@ -349,3 +404,48 @@ const AssignmentView = () => {
 };
 
 export default AssignmentView
+
+const GlobalFont = `
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+`;
+
+
+const MessageContainer = styled.div`
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 500;
+    ${GlobalFont}
+
+    ${props => props.$type === 'info' && `
+        background-color: #e0f2f7;
+        color: #2c7da0;
+        border: 1px solid #a0d8e6;
+    `}
+    ${props => props.$type === 'warning' && `
+        background-color: #fff9e6;
+        color: #c99400;
+        border: 1px solid #f8e178;
+    `}
+    ${props => props.$type === 'error' && `
+        background-color: #fcebeb;
+        color: #e74c3c;
+        border: 1px solid #f2d7d5;
+    `}
+    ${props => props.$type === 'success' && `
+        background-color: #e8f9e6;
+        color: #27ae60;
+        border: 1px solid #bceccb;
+    `}
+
+    svg {
+        font-size: 1.2em;
+    }
+`;
+
+const InfoMessage = styled(MessageContainer)`
+   // Base styling handled by MessageContainer
+`;

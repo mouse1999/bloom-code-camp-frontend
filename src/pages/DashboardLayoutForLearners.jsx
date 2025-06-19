@@ -26,7 +26,6 @@ const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
   const [isMobileView, setIsMobileView] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [activeItem, setActiveItem] = useState('dashboard'); 
   const [userData, setUserData] = useState({
     username: '',
     roles: [],
@@ -122,12 +121,12 @@ const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
   }, []); 
 
   
-  useEffect(() => {
-    if (!isLoggedIn && !isLoading) { 
-      console.log('Navigating to login due to isLoggedIn being false.');
-      navigate('/login');
-    }
-  }, [isLoggedIn, navigate, isLoading]); 
+  // useEffect(() => {
+  //   if (!isLoggedIn && !isLoading) { 
+  //     console.log('Navigating to login due to isLoggedIn being false.');
+  //     navigate('/login');
+  //   }
+  // }, [isLoggedIn, navigate, isLoading]); 
 
 
   const handleLogout = async () => {

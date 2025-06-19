@@ -3,314 +3,529 @@ import { AssignmentGrid, DashboardContainer } from '../Learner/LearnersDashboard
 import styled from 'styled-components'
 import LoadingSpinner from '../../ui/LoadingSpinner';
 import AssignmentCard from '../Learner/AssignmentCard';
+import axios from 'axios';
+import { useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-function ReviewersDashboard({ userRole }) { // Assuming userRole is passed as a prop
+
+
+function ReviewersDashboard({}) { 
     
     const [assignments, setAssignments] = useState([]);
     const [activeTab, setActiveTab] = useState("Available"); // Default active tab
     const [isLoading, setIsLoading] = useState(true);
+    const [availableBadgeLength, setAvailableBadgeLength] = useState(0);
     const [error, setError] = useState(null);
     const [isAvailable, setIsAvailable] = useState(true); // Assuming 'Available' is the initial tab
+    const { userData } = useOutletContext(); // Assuming you have a context for loading state
+    const [submittedAssignments, setSubmittedAssignments] = useState([]);
+    const navigate = useNavigate();
 
-    const fetchAssignments = async () => {
+    const fetchAssignments = async (tab) => {
+      try {
         setIsLoading(true);
-        setError(null);
-        try {
-          // Replace with your actual API endpoint for fetching assignments
-          // const response = await fetch('/api/assignments');
-          // if (!response.ok) {
-          //   throw new Error(`HTTP error! Status: ${response.status}`);
-          // }
-          // const data = await response.json();
-  
-          // --- Simulated Data for Demonstration ---
-          const dummyData = [
-            { id: 1, title: 'Responsive Portfolio', course: 'Web Development 101', dueDate: '2023-06-15', status: 'Pending Submission', progress: 65, branch: 'portfolio-assignment', reviewersName: null },
-            { id: 2, title: 'JavaScript Calculator', course: 'JavaScript Fundamentals', dueDate: '2023-06-10', status: 'Submitted', feedback: 'Pending review', branch: 'js-calculator', reviewersName: null },
-            { id: 3, title: 'React Todo App', course: 'React Basics', dueDate: '2023-05-28', status: 'Needs Update', feedback: 'State management needs improvement', branch: 'react-todo', reviewersName: "jen" },
-            { id: 4, title: 'Node.js API', course: 'Backend Development', dueDate: '2023-05-20', status: 'Completed', score: '95/100', branch: 'node-api', reviewersName: "jen" },
-            { id: 5, title: 'Login Page Redesign', course: 'UI/UX Basics', dueDate: '2023-06-20', status: 'Submitted', feedback: 'Needs review', branch: 'login-redesign', reviewersName: null }, // Another submitted
-            { id: 6, title: 'Database Schema Design', course: 'Database Fundamentals', dueDate: '2023-07-01', status: 'Pending SubmissioN', progress: 20, branch: 'db-schema', reviewersName: null },
-            { id: 1, title: 'Responsive Portfolio', course: 'Web Development 101', dueDate: '2023-06-15', status: 'In Review', progress: 65, branch: 'portfolio-assignment', reviewersName: "kely" }
-          ];
-          // --- End Simulated Data ---
-  
-          setAssignments(dummyData); // Update state with fetched dat
-        } catch (err) {
-          setError(err);
-          console.error("Error fetching assignments:", err);
-        } finally {
-          setIsLoading(false);
+        const token = localStorage.getItem('jwt token');
+        if (!token) {
+          throw new Error('No authentication token found');
         }
-      };
 
+        let endpoint = 'http://localhost:8081/api';
+        if (tab && tab == 'Available') {
+          endpoint += `/assignments?status=Submitted`;
+        }else{
+          endpoint += `/reviewer/assignments?status=${encodeURIComponent(tab)}`;
+        }
 
+        const response = await axios.get(endpoint, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
-    const handleEditAssignment = (assignmentId) => {
-      console.log(`Editing assignment with ID: ${assignmentId}`);
-      // Implement navigation to edit page, e.g., navigate(`/assignments/${assignmentId}/edit`);
-    };
-  
-    const handleSubmitAssignment = (assignmentId) => {
-      console.log(`Submitting assignment with ID: ${assignmentId}`);
-      // Call API to submit. After success, re-fetch assignments.
-      // fetchAssignments(); // <-- Call this after successful API call
-    };
-  
-    const handleViewAssignment = (assignmentId) => {
-      console.log(`Viewing assignment with ID: ${assignmentId}`);
-      // Implement navigation to view page, e.g., navigate(`/assignments/${assignmentId}/view`);
-    };
-  
-    const handleResubmitAssignment = (assignmentId) => {
-      console.log(`Resubmitting assignment with ID: ${assignmentId}`);
-      // Call API to resubmit. After success, re-fetch assignments.
-      // fetchAssignments(); // <-- Call this after successful API call
-    };
-  
-    const handleClaimAssignment = async (assignmentId) => {
-      console.log(`Claiming assignment with ID: ${assignmentId}`);
-      try {
+        console.log(`Assignments fetched for tab "${tab}":`, response.data);
+        console.log(response.data);
+
+        setAssignments(response.data);
+        
+        setError(null);
+      } catch (err) {
+        if (err.response) {
+          setError(err.response.data.message);
+          console.log(`Error fetching assignments for tab "${tab}":`, err.response.data.message);
+        } else if (err.request) {
+          setError('No response from server. Please try again later.');
+        } else {
+          setError(err.message);
+          console.log(`Error fetching assignments for tab "${tab}":`, err.message);
+        }
+        setAssignments([]); // Ensure assignments are cleared on error
+      } finally {
+        setIsLoading(false);
+      }
+  };
+
     
-        // const response = await fetch(`/api/assignments/${assignmentId}/claim`, { method: 'POST' });
-        // if (!response.ok) throw new Error('Failed to claim');
-        // console.log(`Assignment ${assignmentId} claimed successfully!`);
   
-        // For demonstration, update local state directly
-        setAssignments(prevAssignments =>
-          prevAssignments.map(assign =>
-            assign.id === assignmentId ? { ...assign, reviewersName: 'Current Reviewer' } : assign
-          )
-        );
-      } catch (err) {
-        console.error("Error claiming assignment:", err);
-        // Show error message to user
-      } finally {
-        // Re-fetch assignments after action, or simply update local state optimistically
-        // fetchAssignments(); // More robust if you need to sync with backend
+  // Function to fetch assignments with status "Submitted"
+  const fetchSubmittedAssignments = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('jwt token');
+      if (!token) {
+        throw new Error('No authentication token found');
       }
-    };
-  
-  
-    const handleReclaimAssignment = async (assignmentId) => {
-      console.log(`Reclaiming assignment with ID: ${assignmentId}`);
-      try {
-        // Replace with your actual API call to reclaim an assignment
-        // const response = await fetch(`/api/assignments/${assignmentId}/reclaim`, { method: 'POST' });
-        // if (!response.ok) throw new Error('Failed to reclaim');
-        // console.log(`Assignment ${assignmentId} reclaimed successfully!`);
-  
-        // For demonstration, update local state directly
-        setAssignments(prevAssignments =>
-          prevAssignments.map(assign =>
-            assign.id === assignmentId ? { ...assign, reviewersName: "review" } : assign
-          )
-        );
-      } catch (err) {
-        console.error("Error reclaiming assignment:", err);
-        // Show error message to user
-      } finally {
-        // Re-fetch assignments after action, or simply update local state optimistically
-        // fetchAssignments(); // More robust
-      }
-    };
-  
-    // --- Data Fetching Effect ---
-    // This useEffect fetches data when the component mounts
-    useEffect(() => {
+
+      const endpoint = 'http://localhost:8081/api/assignments?status=Submitted';
+
+      const response = await axios.get(endpoint, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      console.log("Submitted assignments fetched:", response.data);
       
-      fetchAssignments();
-    }, []); // Empty dependency array: runs only once on mount
   
-    // --- Filtering Logic (now uses the state variable `assignments`) ---
-    const getFilteredAssignments = (tabStatus) => {
-      if (tabStatus === "Available") {
-        // For reviewer "Available" tab: submitted assignments not yet claimed
-        return assignments.filter(assignment =>
-          assignment.status === 'Submitted' && (!assignment.reviewersName || assignment.reviewersName.trim() === '')
-        );
+      setAvailableBadgeLength(response.data.length);
+      setError(null);
+    } catch (err) {
+      if (err.response) {
+        setError(err.response.data.message);
+        console.log("Error fetching submitted assignments:", err.response.data.message);
+      } else if (err.request) {
+        setError('No response from server. Please try again later.');
+      } else {
+        setError(err.message);
+        console.log("Error fetching submitted assignments:", err.message);
       }
-      // For other tabs, filter by status
-      return assignments.filter(assignment => assignment.status === tabStatus);
-    };
+      setAssignments([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  const handleEdit = (assignmentId) => {
+    console.log(`Editing assignment: ${assignmentId}`);
+    navigate(`/reviewer/assignments/${assignmentId}/edit`); // Assuming navigate is available from react-router-dom
+  };
+
+  const handleView = (assignmentId) => {
+    console.log(`Viewing assignment: ${assignmentId}`);
+    navigate(`/reviewer/assignments/${assignmentId}/view`); // Assuming navigate is available from react-router-dom
+  };
+
   
-    const displayAssignments = getFilteredAssignments(activeTab);
+
+
+    const handleClaim = async (assignmentId) => {
+    console.log(`Claiming assignment: ${assignmentId}`);
+    try {
+      const token = localStorage.getItem('jwt token');
+      if (!token) {
+        throw new Error('No authentication token found');
+        return
+      }
+      const response = await axios.get(`http://localhost:8081/api/assignments/${assignmentId}/claim`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          withCredentials: true
+        }
+      });
+      fetchAssignments("Available");
+      fetchSubmittedAssignments();
+      
+      
+    } catch (err) {
+      console.error(`Error claiming assignment ${assignmentId}:`, err);
+      alert(`Failed to claim assignment ${assignmentId}. Error: ${err.message}`);
+      fetchAssignments("Available");
+
+    }
+  };
+
+  const handleReclaim = async (assignmentId) => {
+    console.log(`Reclaiming assignment: ${assignmentId}`);
+    try {
+      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      // You'll need to define currentReviewerId and currentReviewerName
+      const currentReviewerId = 'reviewer123';
+      const currentReviewerName = 'John Doe';
+      await axios.post(`${API_BASE_URL}/${assignmentId}/reclaim`, {
+        reviewerId: currentReviewerId,
+        reviewerName: currentReviewerName
+      });
+      alert(`Assignment ${assignmentId} reclaimed by ${currentReviewerName}!`);
+      fetchAssignments(activeFilter);
+    } catch (err) {
+      console.error(`Error reclaiming assignment ${assignmentId}:`, err);
+      alert(`Failed to reclaim assignment ${assignmentId}. Error: ${err.message}`);
+    }
+  };
+
+  
+    useEffect(() => {
+      fetchAssignments(activeTab);
+       
+        // eslint-disable-next-line
+      }, [activeTab]);
+
+    useEffect(() => {
+      fetchSubmittedAssignments();
+    }, []);
+
+    useEffect(() => {
+      console.log('Current loading state:', isLoading);
+      }, [isLoading]);
   
     return (
-      <DashboardContainer>
-        <ReviewHeader>
-          <WelcomeTitle>Welcome back, Kufre! </WelcomeTitle>
-          <WelcomeParagaph>This is info specific for testing of application</WelcomeParagaph>
-        </ReviewHeader>
-  
-        <Tabs>
-          <Tab
-            key="Available"
-            active={activeTab === "Available"}
-            onClick={() => {
-              setActiveTab("Available");
-              setIsAvailable(true); // Keep this if 'isAvailable' dictates a specific view mode
-            }}
-          >
-            Available
-            <TabBadge>{getFilteredAssignments("Available").length}</TabBadge>
-          </Tab>
-          <Tab
-            key="In Review"
-            active={activeTab === "In Review"}
-            onClick={() => {
-              setActiveTab("In Review");
-              setIsAvailable(false); // Likely means it's not the 'Available' tab
-            }}
-          >
-            In Review
-            <TabBadge>
-              {getFilteredAssignments("In Review").length}
-            </TabBadge>
-          </Tab>
-          <Tab
-            key="Completed"
-            active={activeTab === "Completed"}
-            onClick={() => {
-              setActiveTab("Completed");
-              setIsAvailable(false);
-            }}
-          >
-            Completed
-            <TabBadge>
-              {getFilteredAssignments("Completed").length}
-            </TabBadge>
-          </Tab>
-          <Tab
-            key="Needs Update"
-            active={activeTab === "Needs Update"}
-            onClick={() => {
-              setActiveTab("Needs Update");
-              setIsAvailable(false);
-            }}
-          >
-            Rejected
-            <TabBadge>
-              {getFilteredAssignments("Needs Update").length}
-            </TabBadge>
-          </Tab>
-        </Tabs>
-  
-        <AssignmentGrid>
-          <LoadingSpinner isLoading={isLoading} />
-          {error && <div>Error: {error.message}</div>}
-          {(!isLoading && !error && displayAssignments.length === 0) && (
-            <div>No assignments found for this category.</div>
+  <DashboardContainer>
+    <ReviewHeader>
+      <HeaderLeft>
+        <AvatarContainer>
+          <UserAvatar src="/src/assets/avatar.jpg" alt="User Avatar" />
+          <OnlineIndicator />
+        </AvatarContainer>
+        <WelcomeContent>
+          <WelcomeText>Welcome back,</WelcomeText>
+          <UserName>{userData.username}</UserName>
+          <DashboardType>
+            <Badge>Reviewer Dashboard</Badge>
+          </DashboardType>
+        </WelcomeContent>
+      </HeaderLeft>
+      
+      <HeaderRight>
+        <StatsContainer>
+          <StatItem>
+            <StatNumber>24</StatNumber>
+            <StatLabel>Reviews Completed</StatLabel>
+          </StatItem>
+          <StatDivider />
+          <StatItem>
+            <StatNumber>5</StatNumber>
+            <StatLabel>Pending Reviews</StatLabel>
+          </StatItem>
+          <StatDivider />
+          <StatItem>
+            <StatNumber>98%</StatNumber>
+            <StatLabel>Avg. Rating</StatLabel>
+          </StatItem>
+        </StatsContainer>
+      </HeaderRight>
+    </ReviewHeader>
+
+    <TabsContainer>
+      <Tabs>
+        <Tab
+          key="Available"
+          active={activeTab === "Available"}
+          onClick={() => {
+            setActiveTab("Available");
+            setIsAvailable(true);
+          }}
+        >
+          Available
+          {availableBadgeLength > 0 && (
+            <TabBadge>{availableBadgeLength}</TabBadge>
           )}
-  
-          {/* Render based on `displayAssignments` */}
-          {displayAssignments.map(assignment => (
-            <AssignmentCard
-              involved={"reviewer"} // Use the prop for the role here!
-              id={assignment.id}
-              key={assignment.id}
-              status={assignment.status}
-              title={assignment.assignmentType}
-              course={assignment.course}
-              branch={assignment.branch}
-              description={assignment.description}
-              feedback={assignment.feedback}
-              submittedDate={assignment.dueDate} // Assuming dueDate acts as submittedDate here
-              reviewersName={assignment.reviewersName} // Pass reviewersName
-              // Pass all action handlers
-              onEditClick={handleEditAssignment}
-              onSubmitClick={handleSubmitAssignment}
-              onViewClick={handleViewAssignment}
-              onResubmitClick={handleResubmitAssignment}
-              onClaimClick={handleClaimAssignment}
-              onReclaimClick={handleReclaimAssignment}
-            />
-          ))}
-        </AssignmentGrid>
-      </DashboardContainer>
-    );
+        </Tab>
+        <Tab
+          key="In Review"
+          active={activeTab === "In Review"}
+          onClick={() => {
+            setActiveTab("In Review");
+            setIsAvailable(false);
+          }}
+        >
+          In Review
+        </Tab>
+        <Tab
+          key="Completed"
+          active={activeTab === "Completed"}
+          onClick={() => {
+            setActiveTab("Completed");
+            setIsAvailable(false);
+          }}
+        >
+          Completed
+        </Tab>
+        <Tab
+          key="Needs Update"
+          active={activeTab === "Needs Update"}
+          onClick={() => {
+            setActiveTab("Needs Update");
+            setIsAvailable(false);
+          }}
+        >
+          Rejected
+        </Tab>
+      </Tabs>
+    </TabsContainer>
+    {assignments.length === 0 && !isLoading ? (
+      <TextMessage>No assignments found for this filter.</TextMessage>
+    ) : (
+      <AssignmentGrid>
+      {assignments.map(assignment => (
+        <AssignmentCard
+          key={assignment.id}
+          id={assignment.id}
+          submittedDate={assignment.createdAt}
+          ReviewedDate={assignment.reviewedAt}
+          branch={assignment.branch}
+          title={assignment.assignmentType}
+          reviewer={assignment.codeReviewerName}
+          learner={assignment.learnerName}
+          gitHubURL={assignment.githubUrl}
+          videoUrl={assignment.reviewVideoUrl}
+          status={assignment.status}
+          assignmentNumber={assignment.assignmentNumber}
+          involved={"reviewer"}
+          onEditClick={handleEdit}
+          // onSubmitClick={handleSubmit}
+          onViewClick={handleView}
+          // onResubmitClick={handleResubmit}
+          onClaimClick={handleClaim}
+          onReclaimClick={handleReclaim}
+        />
+      ))}
+    </AssignmentGrid>
+
+    )}
+
+    
+  </DashboardContainer>
+);
+
   }
 
 
-const Tabs = styled.div`
-display: flex;
-border-bottom: 1px solid #eee;
-margin-bottom: 1.5rem;
-overflow-x: auto;
-padding-bottom: 2px;
+const TabsContainer = styled.div`
+  margin: 1.5rem 0;
+`;
 
+const Tabs = styled.div`
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
 `;
 
 const Tab = styled.div`
-   padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    font-weight: 550;
-    transition: all 0.3s;
-    white-space: nowrap;
-    position: relative;
-    color: #666;
-    line-height: 1.6;
-     border-bottom: 4px solid transparent;
-    transition: border-bottom-color 0.3s ease-in-out;
-    ${({active})=> active && `
-    border-bottom-color: red;
-    
-    `}
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  font-weight: 600;
+  transition: all 0.3s;
+  white-space: nowrap;
+  position: relative;
+  color: #64748b;
+  font-size: 0.95rem;
+  
+  ${({ active }) => active && `
+    border-bottom-color: #3b82f6;
+    color: #1e293b;
+  `}
 
+  &:hover {
+    color: #1e293b;
+  }
 `;
 
 const TabBadge = styled.span`
-position: absolute;
-    top: 0px;
-    right: 5px;
-    background-color: #4361ee;
-    color: white;
-    border-radius: 10px;
-    padding: 0.15rem 0.5rem;
-    font-size: 0.5rem;
-    font-weight: 600;
-
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 9999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
 `;
 
-const ReviewHeader = styled.div`
-padding: 1rem; /* 16px */
+// const ReviewHeader = styled.div`
+//   background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+//   border-radius: 0.75rem;
+//   padding: 1.5rem;
+//   margin-bottom: 1.5rem;
+//   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+// `;
 
-    /* border-b */
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
+const HeaderContent = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
-    /* border-blue-500/30 */
-    border-bottom-color: rgba(59, 130, 246, 0.3); 
-    box-sizing: border-box;
-    border-color: #506e8d;
-    border-style: solid;
-    border-radius: 10px;
-    font-size: 1.25rem; /* 20px */
-    line-height: 1.75rem; /* 28px */
-    margin-bottom: 0.9rem;
-
-    /* font-bold */
-    font-weight: 700;
-    background-color: #566dbb;
-    max-width: 800px;
-    
-
+const WelcomeContainer = styled.div`
+  flex: 1;
 `;
 
 const WelcomeTitle = styled.h1`
-font-size: 1.5rem;
-line-height: 2rem;
-font-weight: 700;
-margin-top: 0;
-color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: white;
 `;
 
-const WelcomeParagaph = styled.p`
-margin-top: 0;
-font-size: 0.95rem;
-color: white;
-
+const WelcomeParagraph = styled.p`
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 80%;
 `;
+
+// const UserAvatar = styled.div`
+//   width: 48px;
+//   height: 48px;
+//   border-radius: 50%;
+//   background-color: rgba(255, 255, 255, 0.2);
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// `;
+
+const Initials = styled.span`
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+`;
+
+const ReviewHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  border: 1px solid #EAECF0;
+`;
+
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+const AvatarContainer = styled.div`
+  position: relative;
+`;
+
+const UserAvatar = styled.img`
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #F4F6F8;
+`;
+
+const OnlineIndicator = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  background-color: #12B76A;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+`;
+
+const WelcomeContent = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const WelcomeText = styled.span`
+  font-size: 14px;
+  color: #667085;
+`;
+
+const UserName = styled.h1`
+  font-size: 20px;
+  font-weight: 600;
+  color: #101828;
+  margin: 4px 0;
+`;
+
+const DashboardType = styled.div`
+  margin-top: 4px;
+`;
+
+const Badge = styled.span`
+  display: inline-block;
+  background-color: #F0F5FF;
+  color: #3B82F6;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+`;
+
+const HeaderRight = styled.div``;
+
+const StatsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  padding: 8px 12px;
+`;
+
+const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 8px;
+`;
+
+const StatNumber = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  color: #101828;
+`;
+
+const StatLabel = styled.span`
+  font-size: 12px;
+  color:rgb(98, 137, 221);
+`;
+
+const StatDivider = styled.div`
+  width: 1px;
+  height: 32px;
+  background-color: #EAECF0;
+`;
+
+const TextMessage = styled.div`
+  margin: 2rem 0 2rem 0;
+  padding: 2rem 2.5rem;
+  max-width: 400px;
+  background: linear-gradient(90deg, #f0f4ff 0%, #e0e7ff 100%);
+  color: #3b82f6;
+  border-radius: 16px;
+  font-size: 1.15rem;
+  font-weight: 500;
+  text-align: left;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.07);
+  letter-spacing: 0.01em;
+  border: 1px solid #dbeafe;
+  align-self: flex-start;
+  display: block;
+`;
+
+// const AssignmentGrid = styled.div`
+//   display: grid;
+//   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+//   gap: 1.5rem;
+//   margin-top: 1.5rem;
+// `;
 
 export default ReviewersDashboard

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const LoginContainer = styled.div`
   display: flex;
@@ -118,6 +119,7 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -138,10 +140,20 @@ function LoginPage() {
       );
 
     
-      const data = response.data;
-      localStorage.setItem('jwt token', data.token); 
+      const { token, roles } = response.data; 
+      console.log(roles[0]);
 
-      navigate('/learner');
+      login(token, roles); 
+
+
+      if (roles[0].trim() === 'ROLE_LEARNER') {
+          navigate('/learner');
+        } else if (roles[0] === 'ROLE_REVIEWER') {
+          navigate('/reviewer');
+        } else {
+          console.log("navigating to unauthorized");
+          navigate('/unauthorized');
+        }
 
   } catch (err) {
       console.error('Login error:', err);

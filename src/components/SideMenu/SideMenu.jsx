@@ -19,8 +19,6 @@ const SideMenu = ({
   setIsOpen,
   isMobileView,
   menuItems,
-  // activeItem,
-  // setActiveItem,
   handleLogout
 
 }) => {
