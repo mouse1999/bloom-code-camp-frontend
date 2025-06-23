@@ -19,14 +19,16 @@ const SideMenu = ({
   setIsOpen,
   isMobileView,
   menuItems,
-  handleLogout
+  handleLogout,
+  activeItem,
+  setActiveItem
 
 }) => {
 
   
   
 
- const [activeItem, setActiveItem] = useState('dashboard');
+//  const [activeItem, setActiveItem] = useState('dashboard');
   const onToggle = (id) => {
     setActiveItem(id);
     if(isMobileView) {

@@ -28,8 +28,8 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
         userData
       };
 
-      const { logout } = useAuth();  
-  
+      const { logout, currentUser } = useAuth();  
+
 
     const menuItems = [
         { icon: faTachometerAlt, label: 'Dashboard', id: 'Dashboard', path: '/reviewer' },
@@ -66,7 +66,8 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
     useEffect(() => {
         const fetchUserData = async () => {
           try {
-            const token = localStorage.getItem('jwt token');
+            const token = currentUser?.token || localStorage.getItem('jwt token');
+            console.log("Current user token:", token);
             if (!token) {
               console.warn('No authentication token found. Navigating to login.');
               setIsLoading(false); 
@@ -115,7 +116,7 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
 
       const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('jwt token');
+      const token = currentUser?.token || localStorage.getItem('jwt token');
       if (!token) {
         console.warn('No token found during logout attempt. Clearing local storage.');
         

@@ -1,11 +1,11 @@
 
 import { useState } from "react";
-import LogButton from "./components/buttons/LogButton";
+import LogButton from "../../../Bloom F-end/bloom-learners/src/components/buttons/LogButton";
 import SearchBar from "./components/ui/SearchBar";
-import Logo from "./components/layout/Logo";
-import SignUpButton from "./components/buttons/SignUpButton";
-import AssignmentForm from "./components/layout/AssignmentForm";
-import {EditButton} from "./components/layout/EditButton";
+import Logo from "../../../Bloom F-end/bloom-learners/src/components/layout/Logo";
+import SignUpButton from "../../../Bloom F-end/bloom-learners/src/components/buttons/SignUpButton";
+import AssignmentForm from "../../../Bloom F-end/bloom-learners/src/components/layout/AssignmentForm";
+import {EditButton} from "../../../Bloom F-end/bloom-learners/src/components/layout/EditButton";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import UserInfo from "./components/navbar/nav-wrappers/UserInfo";
@@ -13,15 +13,15 @@ import UserProfile from "./components/navbar/nav-wrappers/UserProfile";
 import Navbar from "./components/navbar/Navbar";
 import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
-import ParentComponent from "./features/ParentComponent";
+import ParentComponent from "../../../Bloom F-end/bloom-learners/src/components/feature/ParentComponent";
 import AssignmentSubmissionForm from "./features/SubmitAssignmentForm";
-import TopNavigationBar from "./components/layout/TopNavigationBar";
-import DashboardLayout from "./pages/DashboardLayoutForLearners";
+import TopNavigationBar from "../../../Bloom F-end/bloom-learners/src/components/layout/TopNavigationBar";
+import DashboardLayout from "./components/Dashboard/Learner/DashboardLayoutForLearners";
 import SubmitAssignmentForm from "./features/SubmitAssignmentForm";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header/Header";
 import SideMenu from "./components/SideMenu/SideMenu";
-import DashboardLayoutForLearners from "./pages/DashboardLayoutForLearners";
+import DashboardLayoutForLearners from "./components/Dashboard/Learner/DashboardLayoutForLearners";
 import DashboardLayoutForReviewer from "./components/Dashboard/Reviewer/DashboardLayoutForReviewer";
 import LearnersDashboard from "./components/Dashboard/Learner/LearnersDashboard";
 import CreateNewAssignment from "./components/Dashboard/Learner/CreateNewAssignment";
@@ -31,6 +31,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./context/ProtectedRoute";
 import ReviewersDashboard from "./components/Dashboard/Reviewer/ReviewersDashboard";
 import AssignmentReviewPage from "./components/Dashboard/Reviewer/AssignmentReviewPage";
+import RejectedAssignmentView from "./components/Dashboard/Learner/RejectedAssignmentView";
 
 
 
@@ -82,6 +83,7 @@ function App() {
                         <Route path="create" element={<CreateNewAssignment />} /> {/* Matches: /learner/create */}
                         <Route path="assignments/:assignmentId/edit" element={<EditAssignmentForm />} /> {/* Matches: /learner/assignments/:assignmentId/edit */}
                         <Route path="assignments/:assignmentId/view" element={<AssignmentView />} /> {/* Matches: /learner/assignments/:assignmentId/view */}
+                        <Route path="assignments/:assignmentId/reject" element={<RejectedAssignmentView />} /> {/* Matches: /learner/assignments/:assignmentId/reject */}
                     </Route>
 
                     {/* Protected Routes for Reviewers:
@@ -103,6 +105,8 @@ function App() {
                         
                         <Route index element={<ReviewersDashboard />} /> // Matches: /reviewer/dashboard
                         <Route path="assignments/:assignmentId/edit" element={<AssignmentReviewPage/>} /> {/* Matches: /reviewer/assignments/:assignmentId/view */}
+                        <Route path="assignments/:assignmentId/view" element={<AssignmentView />} /> {/* Matches: /reviewer/assignments/:assignmentId/view */}
+                        
 
                     </Route>
 

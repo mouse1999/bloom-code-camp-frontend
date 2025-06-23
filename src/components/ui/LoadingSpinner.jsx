@@ -10,6 +10,7 @@ const SpinnerContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  
   height: ${props => props.fullPage ? '100vh' : 'auto'};
   width: ${props => props.fullPage ? '100vw' : 'auto'};
   position: ${props => props.fullPage ? 'fixed' : 'relative'};
@@ -20,8 +21,8 @@ const SpinnerContainer = styled.div`
 `;
 
 const Spinner = styled.div`
-  width: ${props => props.size || '50px'};
-  height: ${props => props.size || '50px'};
+  width: ${props => props.size || '25px'};
+  height: ${props => props.size || '25px'};
   border: ${props => props.thickness || '5px'} solid ${props => props.color || '#f3f3f3'};
   border-top: ${props => props.thickness || '5px'} solid ${props => props.primaryColor || '#4361ee'};
   border-radius: 50%;

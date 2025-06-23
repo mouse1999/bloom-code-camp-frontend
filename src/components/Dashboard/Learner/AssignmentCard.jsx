@@ -1,9 +1,10 @@
-import AssignmentForm from "../../layout/AssignmentForm";
+import AssignmentForm from "../../../../../../Bloom F-end/bloom-learners/src/components/layout/AssignmentForm";
 
 
 import React from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate } from "react-router-dom";
 import {
   faClock,
   faCheckCircle,
@@ -41,18 +42,14 @@ involved, // 'learner' or 'reviewer'
 
   // Helper to check if a reviewer has claimed this assignment
   const isReviewerClaimed = reviewer && reviewer.trim() !== '';
+  const navigate = useNavigate();
 
   return (
     <AssignmentFormContainer>
       <CardHeader>
         <CardTitle> {title}</CardTitle>
 
-        {/* PENDING_SUBMISSION("Pending Submission", 1),
-    SUBMITTED("Submitted", 2),
-    IN_REVIEW("In Review", 3),
-    NEEDS_UPDATE("Needs Update", 4),
-    COMPLETED("Completed", 5),
-    RESUBMITTED */}
+      
 
         <StatusBadge status={status}>
           {status === 'Pending Submission' && <FontAwesomeIcon icon={faClock} />}
@@ -66,81 +63,66 @@ involved, // 'learner' or 'reviewer'
       </CardHeader>
 
       <CardBody>
-
-
-          {branch && (
-            <DetailRow>
-              <DetailLabel>Branch:</DetailLabel>
-              <DetailValue>{branch}</DetailValue>
-            </DetailRow>
-          )}
-
-
-          {learner && involved === "reviewer" && (
-            <DetailRow>
-              <DetailLabel>Learner:</DetailLabel>
-              <DetailValue>{learner}</DetailValue>
-            </DetailRow>
-          )}
-
-          {gitHubURL && (
-            <DetailRow>
-              <DetailLabel>GitHubURL:</DetailLabel>
-              <DetailValue>{gitHubURL}</DetailValue>
-            </DetailRow>
-          )}
-
-          {videoUrl && (
-            <DetailRow>
-              <DetailLabel>VideoURL:</DetailLabel>
-              <DetailValue>{videoUrl}</DetailValue>
-            </DetailRow>
-          )}
-
-          
-          
-
-        {/* {involved === 'learner' && progress && (
-          <ProgressContainer>
-            <ProgressLabel>
-              <span>Progress</span>
-              <span>{progress}%</span>
-            </ProgressLabel>
-            <ProgressBar>
-              <ProgressFill progress={progress} />
-            </ProgressBar>
-          </ProgressContainer>
+      <DetailGrid>
+        {/* {branch && (
+          <DetailRow>
+            <DetailLabel>Branch</DetailLabel>
+            <DetailValue>{branch}</DetailValue>
+          </DetailRow>
         )} */}
 
-       {submittedDate && (
-            <DetailRow>
-              <DetailLabel>Submitted Date:</DetailLabel>
-              <DetailValue>{submittedDate}</DetailValue>
-            </DetailRow>
-          )}
+        {learner && involved === "reviewer" && (
+          <DetailRow>
+            <DetailLabel>Learner</DetailLabel>
+            <DetailValue>{learner}</DetailValue>
+          </DetailRow>
+        )}
 
-        
+        {/* {gitHubURL && (
+          <DetailRow>
+            <DetailLabel>GitHub URL</DetailLabel>
+            <DetailValue>{gitHubURL}</DetailValue>
+          </DetailRow>
+        )} */}
+
+        {/* {videoUrl && (
+          <DetailRow>
+            <DetailLabel>Video URL</DetailLabel>
+            <DetailValue>{videoUrl}</DetailValue>
+          </DetailRow>
+        )} */}
+
+        {submittedDate && (
+          <DetailRow>
+            <DetailLabel>Submitted Date</DetailLabel>
+            <DetailValue>{submittedDate}</DetailValue>
+          </DetailRow>
+        )}
 
         {reviewedDate && (
-            <DetailRow>
-              <DetailLabel>Reviewed Date:</DetailLabel>
-              <DetailValue>{reviewedDate}</DetailValue>
-            </DetailRow>
-          )}
+          <DetailRow>
+            <DetailLabel>Reviewed Date</DetailLabel>
+            <DetailValue>{reviewedDate}</DetailValue>
+          </DetailRow>
+        )}
 
-       {reviewer && (
-            <DetailRow>
-              <DetailLabel>Reviewer:</DetailLabel>
-              <DetailValue>{reviewer}</DetailValue>
-            </DetailRow>
-          )}
-      </CardBody>
-
+        {reviewer && (
+          <DetailRow>
+            <DetailLabel>Reviewer</DetailLabel>
+            <DetailValue>{reviewer}</DetailValue>
+          </DetailRow>
+        )}
+      </DetailGrid>
+</CardBody>
       <CardFooter>
+        {
+          branch && (
         <BranchInfo>
           <span>Branch:</span>
           <code>{branch}</code>
         </BranchInfo>
+          )
+        }
 
         <CardAction>
           {involved === 'learner' && (
@@ -172,11 +154,8 @@ involved, // 'learner' or 'reviewer'
 
               {status === 'Needs Update' && (
                 <>
-                  <ActionButton outline onClick={() => onEditClick(id)}>
-                    <FontAwesomeIcon icon={faEdit} /> Edit
-                  </ActionButton>
-                  <ActionButton secondary onClick={() => onResubmitClick(id)}>
-                    <FontAwesomeIcon icon={faRedo} /> Resubmit
+                  <ActionButton outline onClick={() => {navigate(`/learner/assignments/${id}/reject`)}}>
+                    <FontAwesomeIcon icon={faEye} /> View
                   </ActionButton>
                 </>
               )}
@@ -209,19 +188,20 @@ involved, // 'learner' or 'reviewer'
 
               {status === 'In Review' &&  (
                 <ActionButton outline onClick={() => onEditClick(id)}>
-                <FontAwesomeIcon icon={faEdit} /> Edit
+                <FontAwesomeIcon icon={faEdit} /> Check
               </ActionButton>
 
-              )
-
-
-              }
-
-              
+              )}
 
               {status === 'Completed' && (
                 <ActionButton outline onClick={() => onViewClick(id)}>
                   <FontAwesomeIcon icon={faEye} /> View
+                </ActionButton>
+              )}
+
+              {status === 'Resubmitted' && (
+                <ActionButton secondary onClick={() => onReclaimClick(id)}>
+                  <FontAwesomeIcon icon={faExchangeAlt} /> Reclaim
                 </ActionButton>
               )}
             </>
@@ -301,31 +281,43 @@ const StatusBadge = styled.span`
 
 const CardBody = styled.div`
   margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+`;
+
+const DetailGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(100px, auto) 1fr;
+  border-left: 1px solid #eaeaea;
 `;
 
 const DetailRow = styled.div`
-  display: flex;
-  margin-bottom: 0.5rem;
+  display: contents;
+  
+  &:not(:last-child) > * {
+    border-bottom: 1px solid #f0f0f0;
+  }
 `;
 
 const DetailLabel = styled.span`
-  font-weight: 800;
-  margin-right: 0.5rem;
-  font-size: 0.85rem;
-  color: #666;
-  min-width: 80px;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #eaeaea;
+  background-color: #fafafa;
 `;
 
 const DetailValue = styled.span`
-  font-size: 0.8rem; /* Standard readable text size */
-  color: #333; /* Darker grey for good contrast */
-  font-weight: 550; /* Regular weight, easy on the eyes */
-  line-height: 1.5; /* Good spacing for readability */
-  /* If it's part of a key-value pair, you might want some margin */
-  margin-left: 0.5rem; /* Space from a preceding label */
-
-  font-family: 'Inter', sans-serif; /* Primary font
-
+  padding: 0.5rem 0.75rem;
+  color:rgb(85, 64, 24);
+  font-weight: 400;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  // font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  word-break: break-word;
 `;
 
 const ProgressContainer = styled.div`

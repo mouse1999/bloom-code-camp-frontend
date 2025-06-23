@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import styled from 'styled-components';
-import Header from '../components/Header/Header';
-import SideMenu from '../components/SideMenu/SideMenu';
-import AssignmentsDashboard from '../components/Dashboard/Learner/LearnersDashboard';
-import CreateNewAssignment from '../components/Dashboard/Learner/CreateNewAssignment';
-import AssignmentView from '../components/Dashboard/Learner/AssignmentView';
+import Header from '../../Header/Header';
+import SideMenu from '../../SideMenu/SideMenu';
+import AssignmentsDashboard from './LearnersDashboard';
+import CreateNewAssignment from './CreateNewAssignment';
+import AssignmentView from './AssignmentView';
 import { Outlet, useNavigate } from 'react-router-dom';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
+import LoadingSpinner from '../../ui/LoadingSpinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAuth } from '../../../context/AuthContext';
 import {
   faTachometerAlt,
   faTasks,
@@ -21,10 +22,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
-const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
+const DashboardLayoutForLearners = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isMobileView, setIsMobileView] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeItem, setActiveItem] = useState('')
+  const { user, logout } = useAuth();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [userData, setUserData] = useState({
     username: '',
@@ -37,16 +40,17 @@ const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
 
   const outletContext = {
     isLoading,
-    setIsLoading
+    setIsLoading,
+    userData
   };
 
   const menuItems = [
-    { icon: faTachometerAlt, label: 'Dashboard', id: 'dashboard' },
-    { icon: faTasks, label: 'New Assignments', id: 'create', path: '/learner/create' },
-    { icon: faGraduationCap, label: 'Learning Path', id: 'learning-path' },
-    { icon: faBook, label: 'Resources', id: 'resources' },
-    { icon: faChartLine, label: 'Progress', id: 'progress' },
-    { icon: faCog, label: 'Settings', id: 'settings' },
+    { icon: faTachometerAlt, label: 'Dashboard', id: 'Dashboard', path: '/learner' },
+    { icon: faTasks, label: 'Create Assignment', id: 'Create Assignment', path: '/learner/create' },
+    // { icon: faGraduationCap, label: 'Learning Path', id: 'learning-path' },
+    { icon: faBook, label: 'Resources', id: 'Resources', path: '/learner/resources' },
+    // { icon: faChartLine, label: 'Progress', id: 'progress' },
+    { icon: faCog, label: 'Settings', id: 'Settings', path: '/learner/settings' },
   ];
 
   useEffect(() => {
@@ -70,7 +74,7 @@ const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem('jwt token');
+        const token = user?.token || localStorage.getItem('jwt token');
         if (!token) {
           console.warn('No authentication token found. Navigating to login.');
           setIsLoggedIn(false); 
@@ -121,22 +125,14 @@ const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
   }, []); 
 
   
-  // useEffect(() => {
-  //   if (!isLoggedIn && !isLoading) { 
-  //     console.log('Navigating to login due to isLoggedIn being false.');
-  //     navigate('/login');
-  //   }
-  // }, [isLoggedIn, navigate, isLoading]); 
-
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('jwt token');
+      const token = user?.token || localStorage.getItem('jwt token');
       if (!token) {
         console.warn('No token found during logout attempt. Clearing local storage.');
         
-        localStorage.removeItem('jwt token');
-        localStorage.removeItem('user');
+        logout();
         setIsLoggedIn(false);
         return;
       }
@@ -167,8 +163,7 @@ const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
       }
       
     } finally {
-      localStorage.removeItem('jwt token');
-      localStorage.removeItem('user');
+      logout(); 
       setIsLoggedIn(false); 
     }
   };
@@ -198,10 +193,13 @@ const DashboardLayoutForLearners = ({ children = <CreateNewAssignment/> }) => {
        setIsOpen={setIsOpen}
         isMobileView={isMobileView}
         menuItems={menuItems}
-        handleLogout={handleLogout} />
+        handleLogout={handleLogout}
+        activeItem={activeItem}
+        setActiveItem={setActiveItem}
+         />
 
       <MainContent isOpen={isOpen}>
-        <Header handleLogout={handleLogout} userData={userData} />
+        <Header handleLogout={handleLogout} userData={userData} activeHeaderTitle={<span>{activeItem}</span>} />
         <ContentWrapper>
           {/* {isLoading && (
             <LoadingOverlay>

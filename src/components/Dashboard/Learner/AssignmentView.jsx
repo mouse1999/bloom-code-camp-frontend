@@ -58,8 +58,8 @@ const StatusSpan = styled.span`
 const StatusBadge = styled.span`
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 550;
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -191,6 +191,13 @@ const AssignmentView = () => {
               {rawValue}
             </a>
           );
+        }else if(label === "Video Url") {
+          formattedValue = (
+            <a href={rawValue} target="_blank" rel="noopener noreferrer" style={{ color: '#3498db', textDecoration: 'none' }}>
+              {rawValue}
+            </a>
+          );
+
         }
 
         details.push({
@@ -224,7 +231,7 @@ const AssignmentView = () => {
                 }
 
                 // Await the axios call to get the actual data
-                const response = await axios.get(`http://localhost:8081/api/user/assignments/${id}`, {
+                const response = await axios.get(`http://localhost:8081/api/assignments/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
@@ -265,16 +272,6 @@ const AssignmentView = () => {
     }, [assignmentId]); 
 
   
-//   if (loading) {
-//     return (
-//       <DashboardContainer>
-//         <AssignmentViewContainer>
-//           <div>Loading assignment details...</div>
-//         </AssignmentViewContainer>
-//       </DashboardContainer>
-//     );
-//   }
-
   if (error) {
     return (
       <DashboardContainer>
@@ -354,22 +351,23 @@ const AssignmentView = () => {
           </SectionTitle>
           <VideoContainer>
             {assignment.reviewVideoUrl ? (
-                              <iframe
-                                  width="100%"
-                                  height="315"
-                                  src={assignment.reviewVideoUrl.replace("watch?v=", "embed/")} // Converts YouTube watch URL to embed URL
-                                  title="Assignment Review Video"
-                                  frameBorder="0"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowFullScreen
-                              ></iframe>
-                          ) : (
-                              <InfoMessage $type="info">
-                                  <FontAwesomeIcon icon={faInfoCircle} /> No review video available for this assignment yet.
-                              </InfoMessage>
-                          )
-            }
-
+              <>
+                <iframe
+                  width="100%"
+                  height="315"
+                  src={assignment.reviewVideoUrl.replace("watch?v=", "embed/")} // Converts YouTube watch URL to embed URL
+                  title="Assignment Review Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+                
+              </>
+            ) : (
+              <InfoMessage $type="info">
+                <FontAwesomeIcon icon={faInfoCircle} /> No review video available for this assignment yet.
+              </InfoMessage>
+            )}
           </VideoContainer>
 
           <SectionTitle>
@@ -448,4 +446,12 @@ const MessageContainer = styled.div`
 
 const InfoMessage = styled(MessageContainer)`
    // Base styling handled by MessageContainer
+`;
+
+const VideoLinkContainer = styled.div`
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.98rem;
+  word-break: break-all;
 `;

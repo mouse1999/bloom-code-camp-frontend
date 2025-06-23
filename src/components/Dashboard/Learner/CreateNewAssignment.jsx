@@ -10,12 +10,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import BackLinkToDashboard from "../../ui/BackLinkToDashboard"; // Verify this path
+import BackLinkToDashboard from "../../ui/BackLinkToDashboard"; 
 
-// Assuming these are external components from LearnersDashboard or a shared UI library
-import { DashboardContainer, DashboardHeader, Title } from "./LearnersDashboard"; // Verify this path
 
-// --- Confirmation Modal Component (Reused and slightly adapted) ---
+import { DashboardContainer, DashboardHeader, Title } from "./LearnersDashboard"; 
+
+// --- Confirmation Modal 
 const ConfirmationModal = ({ message, onConfirm, onCancel }) => {
   return (
     <ModalOverlay>
@@ -30,7 +30,7 @@ const ConfirmationModal = ({ message, onConfirm, onCancel }) => {
   );
 };
 
-// --- Component Definition ---
+
 const CreateNewAssignment = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -47,10 +47,10 @@ const CreateNewAssignment = () => {
     const [assignmentId, setAssignmentId] = useState(null);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submissionMessage, setSubmissionMessage] = useState(null); // For success/error messages after submission
+    const [submissionMessage, setSubmissionMessage] = useState(null); 
     const [assignmentEnumList, setAssignmentEnumList] = useState([]);
 
-    // States for assignment selection confirmation modal
+    
     const [showSelectionConfirmationModal, setShowSelectionConfirmationModal] = useState(false);
     const [selectedAssignmentForConfirmation, setSelectedAssignmentForConfirmation] = useState(null);
 
@@ -61,7 +61,7 @@ const CreateNewAssignment = () => {
                 const token = localStorage.getItem('jwt token'); 
                 if (!token) {
                     console.error('No authentication token found');
-                    // Display error message to user
+                    
                     setSubmissionMessage({ type: 'error', message: 'Authentication required. Please log in.' });
                     return;
                 }
@@ -187,16 +187,11 @@ const CreateNewAssignment = () => {
         }
     };
 
-    // Cancel the assignment selection
+    
     const cancelAssignmentSelection = () => {
         setShowSelectionConfirmationModal(false);
         setSelectedAssignmentForConfirmation(null);
         
-        // setFormData(prev => ({ ...prev, assignmentNumber: '' }));
-        // setSelectedAssignmentDetails(null);
-        // setIsAlreadyDone(false);
-        // setErrors({}); // Clear errors related to selection
-        // setSubmissionMessage(null); // Clear messages
     };
 
     const handleChange = (e) => {
@@ -250,10 +245,8 @@ const CreateNewAssignment = () => {
             });
 
             setSubmissionMessage({ type: 'success', message: 'Assignment submitted successfully!' });
-            // Clear form fields, but keep assignmentNumber if user intends to submit another for the same assignment type
             setFormData({ githubUrl: '', branch: '', notes: '', assignmentNumber: formData.assignmentNumber }); 
-            // Optionally, navigate back to dashboard after successful submission
-            // navigate('/dashboard'); 
+            
         } catch (error) {
             console.error('Error submitting assignment:', error);
             let errorMessage = 'Failed to submit the assignment. Please try again.';
@@ -273,9 +266,10 @@ const CreateNewAssignment = () => {
             </DashboardHeader>
 
             <FormWrapper>
-                <BackLinkToDashboard/>
+            
 
                 <GlassPanel>
+                    <BackLinkToDashboard/>
                     <FormHeader>
                         {selectedAssignmentDetails ? (
                             <>

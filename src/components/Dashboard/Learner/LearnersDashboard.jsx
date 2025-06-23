@@ -4,13 +4,23 @@ import AssignmentCard from './AssignmentCard';
 import LoadingSpinner from '../../ui/LoadingSpinner';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faUserGraduate,
+  faChalkboardTeacher
+
+  
+
+} from "@fortawesome/free-solid-svg-icons";
 
 
 const LearnersDashboard = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const [assignments, setAssignments] = useState([]);
   const [error, setError] = useState(null);
-  const { isLoading, setIsLoading } = useOutletContext();
+  const [isLoading,  setIsLoading] = useState(false);
+  const [allAssignment, setAllAssignment] = useState([]);
+  const { userData } = useOutletContext();
   const navigate = useNavigate();
 
   // Fetch assignments from backend with filter
@@ -34,6 +44,9 @@ const LearnersDashboard = () => {
       });
 
       setAssignments(response.data);
+      if(filter === 'All'){
+        setAllAssignment(response.data);
+      } 
       setError(null);
     } catch (err) {
       if (err.response) {
@@ -135,50 +148,92 @@ const LearnersDashboard = () => {
     console.log('Current loading state:', isLoading);
   }, [isLoading]);
 
+
   return (
     <DashboardContainer>
-      <DashboardHeader>
-        <WelcomeContainer>
-          <Title>Welcome, Kufre Edward</Title>
-          <WelcomeParagraph>This space is for specific information</WelcomeParagraph>
-        </WelcomeContainer>
-        <FilterControls>
-          <FilterButton
-            active={activeFilter === 'All'}
-            onClick={() => setActiveFilter('All')}
-          >
-            All
-          </FilterButton>
-          <FilterButton
-            active={activeFilter === 'Pending Submission'}
-            onClick={() => setActiveFilter('Pending Submission')}
-          >
-            In Progress
-          </FilterButton>
-          <FilterButton
-            active={activeFilter === 'Submitted'}
-            onClick={() => setActiveFilter('Submitted')}
-          >
-            Submitted
-          </FilterButton>
-          <FilterButton
-            active={activeFilter === 'Completed'}
-            onClick={() => setActiveFilter('Completed')}
-          >
-            Completed
-          </FilterButton>
-          <FilterButton
-            active={activeFilter === 'Resubmitted'}
-            onClick={() => setActiveFilter('Resubmitted')}
-          >
-            Resubmitted
-          </FilterButton>
-        </FilterControls>
-        {/* Conditional rendering for "No assignment found" */}
-        {!isLoading && assignments.length === 0 && (
-          <TextMessage>No assignment found under this filter.</TextMessage>
-        )}
-      </DashboardHeader>
+      <LearnerHeader>
+        <HeaderLeft>
+          <AvatarContainer>
+            <UserAvatar src="/src/assets/avatar.jpg" alt="User Avatar" />
+            <OnlineIndicator />
+          </AvatarContainer>
+          <WelcomeContent>
+            <WelcomeText>
+              <FontAwesomeIcon icon={faUserGraduate} style={{ marginRight: "0.5rem" }} />
+              Welcome back, {userData.username}
+            </WelcomeText>
+            <UserName>{userData.username}</UserName>
+            <DashboardType>
+              <Badge>
+                <FontAwesomeIcon icon={faChalkboardTeacher} style={{ marginRight: "0.4rem" }} />
+                Learner Dashboard
+              </Badge>
+            </DashboardType>
+            <WelcomeParagraph>
+              ...
+            </WelcomeParagraph>
+          </WelcomeContent>
+        </HeaderLeft>
+        <HeaderRight>
+          <StatsContainer>
+            <StatItem>
+              <StatNumber>{allAssignment.length}</StatNumber>
+              <StatLabel>Assignments</StatLabel>
+            </StatItem>
+            <StatDivider />
+            <StatItem>
+              <StatNumber>
+                {allAssignment.filter(a => a.status === "Completed").length}
+              </StatNumber>
+              <StatLabel>Completed</StatLabel>
+            </StatItem>
+            <StatDivider />
+            <StatItem>
+              <StatNumber>
+                {allAssignment.filter(a => a.status === "Submitted" || a.status === "Resubmitted").length}
+              </StatNumber>
+              <StatLabel>Pending Review</StatLabel>
+            </StatItem>
+          </StatsContainer>
+        </HeaderRight>
+      </LearnerHeader>
+
+      <FilterControls>
+        <FilterButton
+          active={activeFilter === 'All'}
+          onClick={() => setActiveFilter('All')}
+        >
+          All
+        </FilterButton>
+        <FilterButton
+          active={activeFilter === 'Pending Submission'}
+          onClick={() => setActiveFilter('Pending Submission')}
+        >
+          In Progress
+        </FilterButton>
+        <FilterButton
+          active={activeFilter === 'Submitted'}
+          onClick={() => setActiveFilter('Submitted')}
+        >
+          Submitted
+        </FilterButton>
+        <FilterButton
+          active={activeFilter === 'Completed'}
+          onClick={() => setActiveFilter('Completed')}
+        >
+          Completed
+        </FilterButton>
+        <FilterButton
+          active={activeFilter === 'Resubmitted'}
+          onClick={() => setActiveFilter('Resubmitted')}
+        >
+          Resubmitted
+        </FilterButton>
+      </FilterControls>
+
+      {!isLoading && assignments.length === 0 && (
+        <TextMessage>No assignment found under this filter.</TextMessage>
+      )}
 
       {isLoading ? (
         <LoadingSpinner />
@@ -189,7 +244,7 @@ const LearnersDashboard = () => {
               key={assignment.id}
               id={assignment.id}
               submittedDate={assignment.createdAt}
-              ReviewedDate={assignment.reviewedAt}
+              reviewedDate={assignment.reviewedAt}
               branch={assignment.branch}
               title={assignment.assignmentType}
               reviewer={assignment.codeReviewerName}
@@ -212,7 +267,6 @@ const LearnersDashboard = () => {
     </DashboardContainer>
   );
 };
-
 
 
 export const DashboardContainer = styled.div`
@@ -239,6 +293,7 @@ export const Title = styled.h1`
 
 const FilterControls = styled.div`
   display: flex;
+  margin: 1rem;
   gap: 0.25rem;
   flex-wrap: wrap;
 `;
@@ -288,13 +343,146 @@ const WelcomeParagraph = styled.p`
 
 
 const TextMessage = styled.div`
-  padding: 16px;
-  margin: 16px 0;
-  border-radius: 8px;
-  font-size: 1.2rem;
-  text-align: center;
+  margin: 2rem 0 2rem 0;
+  padding: 2rem 2.5rem;
+  max-width: 400px;
+  background: linear-gradient(90deg, #f0f4ff 0%, #e0e7ff 100%);
+  color: #3b82f6;
+  border-radius: 16px;
+  font-size: 1.15rem;
   font-weight: 500;
-  border: 1px solid transparent;
-  `;
+  text-align: left;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.07);
+  letter-spacing: 0.01em;
+  border: 1px solid #dbeafe;
+  align-self: flex-start;
+  display: block;
+`;
+
+  const LearnerHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: linear-gradient(90deg, #f0f4ff 0%, #e0e7ff 100%);
+  border-radius: 18px;
+  padding: 2rem 2.5rem 1.5rem 2rem;
+  box-shadow: 0 2px 16px rgba(67, 97, 238, 0.07);
+`;
+
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+`;
+
+const AvatarContainer = styled.div`
+  position: relative;
+  width: 60px;
+  height: 60px;
+`;
+
+const UserAvatar = styled.img`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4361ee;
+`;
+
+const OnlineIndicator = styled.span`
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 14px;
+  height: 14px;
+  background: #22c55e;
+  border: 2px solid #fff;
+  border-radius: 50%;
+`;
+
+const WelcomeContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
+const WelcomeText = styled.div`
+  font-size: 1.1rem;
+  color: #3b82f6;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+`;
+
+const UserName = styled.h1`
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #101828;
+  margin: 0.1rem 0 0.2rem 0;
+`;
+
+const DashboardType = styled.div`
+  margin-top: 2px;
+`;
+
+const Badge = styled.span`
+  display: inline-block;
+  background-color: #F0F5FF;
+  color: #3B82F6;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+`;
+const HeaderRight = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const StatsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  padding: 10px 18px;
+`;
+
+const StatItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+`;
+
+const StatNumber = styled.div`
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #4361ee;
+`;
+
+const StatLabel = styled.div`
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+`;
+
+const StatDivider = styled.div`
+  width: 1px;
+  height: 32px;
+  background: #e0e7ff;
+`;
+
+const FilterIcon = styled.span`
+  color: #64748b;
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+`;
+
 
 export default LearnersDashboard;

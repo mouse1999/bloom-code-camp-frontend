@@ -6,6 +6,7 @@ import AssignmentCard from '../Learner/AssignmentCard';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useAuth} from '../../../context/AuthContext';
 
 
 
@@ -20,18 +21,20 @@ function ReviewersDashboard({}) {
     const { userData } = useOutletContext(); // Assuming you have a context for loading state
     const [submittedAssignments, setSubmittedAssignments] = useState([]);
     const navigate = useNavigate();
+    const { currentUser } = useAuth();
 
     const fetchAssignments = async (tab) => {
       try {
         setIsLoading(true);
-        const token = localStorage.getItem('jwt token');
+        const token = currentUser?.token || localStorage.getItem('jwt token');
+        console.log("Current user token:", token);
         if (!token) {
           throw new Error('No authentication token found');
         }
 
         let endpoint = 'http://localhost:8081/api';
         if (tab && tab == 'Available') {
-          endpoint += `/assignments?status=Submitted`;
+          endpoint += `/reviewer/assignments/claim-reclaim`;
         }else{
           endpoint += `/reviewer/assignments?status=${encodeURIComponent(tab)}`;
         }
@@ -67,15 +70,15 @@ function ReviewersDashboard({}) {
     
   
   // Function to fetch assignments with status "Submitted"
-  const fetchSubmittedAssignments = async () => {
+  const fetchClaimAndUnclaimAssignments = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem('jwt token');
+      const token = currentUser?.token || localStorage.getItem('jwt token');
       if (!token) {
         throw new Error('No authentication token found');
       }
 
-      const endpoint = 'http://localhost:8081/api/assignments?status=Submitted';
+      const endpoint = 'http://localhost:8081/api/reviewer/assignments/claim-reclaim';
 
       const response = await axios.get(endpoint, {
         headers: {
@@ -120,7 +123,8 @@ function ReviewersDashboard({}) {
     const handleClaim = async (assignmentId) => {
     console.log(`Claiming assignment: ${assignmentId}`);
     try {
-      const token = localStorage.getItem('jwt token');
+      const token = currentUser?.token || localStorage.getItem('jwt token');
+      console.log("Current user token:", token);
       if (!token) {
         throw new Error('No authentication token found');
         return
@@ -132,33 +136,41 @@ function ReviewersDashboard({}) {
         }
       });
       fetchAssignments("Available");
-      fetchSubmittedAssignments();
+      fetchClaimAndUnclaimAssignments();
       
       
     } catch (err) {
       console.error(`Error claiming assignment ${assignmentId}:`, err);
-      alert(`Failed to claim assignment ${assignmentId}. Error: ${err.message}`);
+      alert(`Failed to claim this assignment`);
       fetchAssignments("Available");
 
     }
   };
 
   const handleReclaim = async (assignmentId) => {
-    console.log(`Reclaiming assignment: ${assignmentId}`);
+    console.log(`reclaiming assignment: ${assignmentId}`);
     try {
-      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
-      // You'll need to define currentReviewerId and currentReviewerName
-      const currentReviewerId = 'reviewer123';
-      const currentReviewerName = 'John Doe';
-      await axios.post(`${API_BASE_URL}/${assignmentId}/reclaim`, {
-        reviewerId: currentReviewerId,
-        reviewerName: currentReviewerName
+      const token = currentUser?.token || localStorage.getItem('jwt token');
+      console.log("Current user token:", token);
+      if (!token) {
+        throw new Error('No authentication token found');
+        return
+      }
+      const response = await axios.put(`http://localhost:8081/api/reviewer/assignments/${assignmentId}/reclaim`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          withCredentials: true
+        }
       });
-      alert(`Assignment ${assignmentId} reclaimed by ${currentReviewerName}!`);
-      fetchAssignments(activeFilter);
+      fetchAssignments("Available");
+      fetchClaimAndUnclaimAssignments();
+      
+      
     } catch (err) {
       console.error(`Error reclaiming assignment ${assignmentId}:`, err);
       alert(`Failed to reclaim assignment ${assignmentId}. Error: ${err.message}`);
+      fetchAssignments("Available");
+
     }
   };
 
@@ -170,7 +182,7 @@ function ReviewersDashboard({}) {
       }, [activeTab]);
 
     useEffect(() => {
-      fetchSubmittedAssignments();
+      fetchClaimAndUnclaimAssignments();
     }, []);
 
     useEffect(() => {
@@ -521,11 +533,5 @@ const TextMessage = styled.div`
   display: block;
 `;
 
-// const AssignmentGrid = styled.div`
-//   display: grid;
-//   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-//   gap: 1.5rem;
-//   margin-top: 1.5rem;
-// `;
 
 export default ReviewersDashboard
