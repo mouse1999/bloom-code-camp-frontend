@@ -1,5 +1,4 @@
 
-
 import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -14,6 +13,7 @@ import ProtectedRoute from "./context/ProtectedRoute";
 import ReviewersDashboard from "./components/Dashboard/Reviewer/ReviewersDashboard";
 import AssignmentReviewPage from "./components/Dashboard/Reviewer/AssignmentReviewPage";
 import RejectedAssignmentView from "./pages/RejectedAssignmentView";
+import HomePage from "./pages/HomePage";
 
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
                 <Routes>
                     <Route path="/register" element={<RegistrationPage />} />
                     <Route path="/login" element={<LoginPage />} />
-                    <Route path="/" element={<div>Welcome to the Application! Please Login or Register.</div>} />
+                    <Route path="/" element={<HomePage />} />
                     <Route
                         path="/learner"
                         element={
