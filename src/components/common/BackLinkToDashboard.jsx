@@ -15,8 +15,16 @@ const BackLinkWrapper = styled.button`
   border: none;
   cursor: pointer;
   font-size: 1rem;
+  transition: color 0.2s, font-size 0.2s;
+
   &:hover {
     text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.75rem;
+    gap: 0.3rem;
+    margin-bottom: 1rem;
   }
 `;
 

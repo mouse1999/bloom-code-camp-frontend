@@ -1,28 +1,28 @@
 
 import { useState } from "react";
 import LogButton from "../../../Bloom F-end/bloom-learners/src/components/buttons/LogButton";
-import SearchBar from "./components/ui/SearchBar";
+import SearchBar from "./components/common/SearchBar";
 import Logo from "../../../Bloom F-end/bloom-learners/src/components/layout/Logo";
 import SignUpButton from "../../../Bloom F-end/bloom-learners/src/components/buttons/SignUpButton";
 import AssignmentForm from "../../../Bloom F-end/bloom-learners/src/components/layout/AssignmentForm";
 import {EditButton} from "../../../Bloom F-end/bloom-learners/src/components/layout/EditButton";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import UserInfo from "./components/navbar/nav-wrappers/UserInfo";
-import UserProfile from "./components/navbar/nav-wrappers/UserProfile";
-import Navbar from "./components/navbar/Navbar";
+import UserInfo from "../../../Bloom F-end/bloom-learners/src/components/navbar/nav-wrappers/UserInfo";
+import UserProfile from "../../../Bloom F-end/bloom-learners/src/components/navbar/nav-wrappers/UserProfile";
+import Navbar from "../../../Bloom F-end/bloom-learners/src/components/navbar/Navbar";
 import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
 import ParentComponent from "../../../Bloom F-end/bloom-learners/src/components/feature/ParentComponent";
-import AssignmentSubmissionForm from "./features/SubmitAssignmentForm";
+import AssignmentSubmissionForm from "./components/Dashboard/Learner/SubmitAssignmentForm";
 import TopNavigationBar from "../../../Bloom F-end/bloom-learners/src/components/layout/TopNavigationBar";
-import DashboardLayout from "./components/Dashboard/Learner/DashboardLayoutForLearners";
-import SubmitAssignmentForm from "./features/SubmitAssignmentForm";
+import DashboardLayout from "./pages/DashboardLayoutForLearners";
+import SubmitAssignmentForm from "./components/Dashboard/Learner/SubmitAssignmentForm";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from "./components/Header/Header";
-import SideMenu from "./components/SideMenu/SideMenu";
-import DashboardLayoutForLearners from "./components/Dashboard/Learner/DashboardLayoutForLearners";
-import DashboardLayoutForReviewer from "./components/Dashboard/Reviewer/DashboardLayoutForReviewer";
+import Header from "./components/Nav/Header";
+import SideMenu from "./components/Nav/SideMenu";
+import DashboardLayoutForLearners from "./pages/DashboardLayoutForLearners";
+import DashboardLayoutForReviewer from "./pages/DashboardLayoutForReviewer";
 import LearnersDashboard from "./components/Dashboard/Learner/LearnersDashboard";
 import CreateNewAssignment from "./components/Dashboard/Learner/CreateNewAssignment";
 import EditAssignmentForm from "./components/Dashboard/Learner/EditAssignmentForm";
@@ -31,7 +31,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./context/ProtectedRoute";
 import ReviewersDashboard from "./components/Dashboard/Reviewer/ReviewersDashboard";
 import AssignmentReviewPage from "./components/Dashboard/Reviewer/AssignmentReviewPage";
-import RejectedAssignmentView from "./components/Dashboard/Learner/RejectedAssignmentView";
+import RejectedAssignmentView from "./pages/RejectedAssignmentView";
 
 
 

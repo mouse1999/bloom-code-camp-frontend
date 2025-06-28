@@ -8,6 +8,15 @@ const LoginContainer = styled.div`
   display: flex;
   min-height: 100vh;
   background: #f8fafc;
+  align-items: center;
+  justify-content: center;
+  
+  padding: 0;
+
+  @media (max-width: 640px) {
+    padding: 0.5rem;
+    
+  }
 `;
 
 const LoginFormWrapper = styled.div`
@@ -18,21 +27,18 @@ const LoginFormWrapper = styled.div`
   background: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  
+
   @media (max-width: 640px) {
-    padding: 1.5rem;
-    margin: 1rem;
+    padding: 1.2rem;
+    margin: 0.7rem;
+    max-width: 22rem;
   }
 
   @media (max-width: 480px) {
-    max-width: 22rem;
-    padding: 1rem;
-  }
-
-  @media (max-width: 360px) {
-    max-width: 18rem;
-    padding: 0.5rem;
-    margin: 0.5rem;
+    padding: 0.7rem;
+    margin: 0.3rem;
+    max-width: 99vw;
+    border-radius: 0.35rem;
   }
 `;
 
@@ -42,10 +48,19 @@ const LoginHeader = styled.h2`
   color: inherit;
   text-align: center;
   margin-bottom: 2rem;
+
+  @media (max-width: 480px) {
+    font-size: 1.1rem;
+    margin-bottom: 1.2rem;
+  }
 `;
 
 const InputGroup = styled.div`
   margin-bottom: 1.5rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 1rem;
+  }
 `;
 
 const InputLabel = styled.label`
@@ -54,6 +69,11 @@ const InputLabel = styled.label`
   font-weight: 550;
   color: #374151;
   margin-bottom: 0.5rem;
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
 `;
 
 const InputField = styled.input`
@@ -70,6 +90,12 @@ const InputField = styled.input`
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    padding: 0.55rem;
+    border-radius: 0.25rem;
+  }
 `;
 
 const SubmitButton = styled.button`
@@ -83,6 +109,7 @@ const SubmitButton = styled.button`
   cursor: pointer;
   transition: background-color 0.2s;
   margin-top: 1rem;
+  font-size: 1rem;
 
   &:hover {
     background-color: #2563eb;
@@ -92,12 +119,23 @@ const SubmitButton = styled.button`
     background-color: #93c5fd;
     cursor: not-allowed;
   }
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+    padding: 0.55rem;
+    border-radius: 0.25rem;
+    margin-top: 0.7rem;
+  }
 `;
 
 const ErrorMessage = styled.p`
   color: #ef4444;
   font-size: 0.875rem;
   margin-top: 0.25rem;
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const ForgotPasswordLink = styled.a`
@@ -110,6 +148,11 @@ const ForgotPasswordLink = styled.a`
 
   &:hover {
     text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
   }
 `;
 
@@ -129,7 +172,7 @@ function LoginPage() {
     try {
     
       const response = await axios.post(
-          'http://localhost:8081/api/users/login',
+          'http://localhost:8081/api/auth/login',
           { username, password },
           {
               withCredentials: true, // Equivalent to credentials: 'include' for cookies
@@ -146,7 +189,7 @@ function LoginPage() {
       login(token, roles); 
 
 
-      if (roles[0].trim() === 'ROLE_LEARNER') {
+      if (roles[0].trim() === 'ROLE_LEARNER') {  //i will need to come back for this
           navigate('/learner');
         } else if (roles[0] === 'ROLE_REVIEWER') {
           navigate('/reviewer');

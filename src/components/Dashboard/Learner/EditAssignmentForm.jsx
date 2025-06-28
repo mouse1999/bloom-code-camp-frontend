@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import BackLinkToDashboard from "../../ui/BackLinkToDashboard"; // Ensure this path is correct
+import BackLinkToDashboard from "../../common/BackLinkToDashboard"; // Ensure this path is correct
 
 // Reusing common styled components from LearnersDashboard or a shared UI library
 import { DashboardContainer, DashboardHeader, Title } from "./LearnersDashboard"; 
@@ -287,12 +287,27 @@ const GlassPanel = styled.div`
     margin: auto; 
     border: 1px solid rgba(255, 255, 255, 0.3);
     ${GlobalFont}
+
+    @media (max-width: 900px) {
+        max-width: 98vw;
+        padding: 1.2rem;
+    }
+    @media (max-width: 600px) {
+        padding: 0.7rem 0.3rem;
+        border-radius: 8px;
+        box-shadow: none;
+    }
 `;
 
 const FormWrapper = styled.div`
     padding: 1rem;
     max-width: 800px;
     margin: 0 auto;
+
+    @media (max-width: 900px) {
+        max-width: 100vw;
+        padding: 0.5rem;
+    }
 `;
 
 const FormHeader = styled.div`
@@ -300,6 +315,11 @@ const FormHeader = styled.div`
     padding-bottom: 1.5rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
+
+    @media (max-width: 600px) {
+        margin-bottom: 1rem;
+        padding-bottom: 0.7rem;
+    }
 `;
 
 const FormTitle = styled.h2`
@@ -309,6 +329,10 @@ const FormTitle = styled.h2`
     font-weight: 700;
     letter-spacing: -0.03em;
     ${GlobalFont}
+
+    @media (max-width: 600px) {
+        font-size: 0.75rem;
+    }
 `;
 
 const FormSubtitle = styled.p`
@@ -317,10 +341,18 @@ const FormSubtitle = styled.p`
     font-size: 1.1rem;
     line-height: 1.5;
     ${GlobalFont}
+
+    @media (max-width: 600px) {
+        font-size: 0.75rem;
+    }
 `;
 
 const FormGroup = styled.div`
     margin-bottom: 1.75rem;
+
+    @media (max-width: 600px) {
+        margin-bottom: 1.1rem;
+    }
 `;
 
 const InputLabel = styled.label`
@@ -330,6 +362,11 @@ const InputLabel = styled.label`
     color: #34495e;
     font-size: 1rem;
     ${GlobalFont}
+
+    @media (max-width: 600px) {
+        font-size: 0.75rem;
+        margin-bottom: 0.4rem;
+    }
 `;
 
 const InputField = styled.input`
@@ -351,6 +388,11 @@ const InputField = styled.input`
     &:disabled {
         background-color: #ecf0f1;
         cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+        font-size: 0.75rem;
+        padding: 0.7rem 0.7rem;
     }
 `;
 
@@ -376,6 +418,11 @@ const TextAreaField = styled.textarea`
         background-color: #ecf0f1;
         cursor: not-allowed;
     }
+
+    @media (max-width: 600px) {
+        font-size: 0.75rem;
+        padding: 0.7rem 0.7rem;
+    }
 `;
 
 const ErrorText = styled.span`
@@ -385,6 +432,11 @@ const ErrorText = styled.span`
     font-size: 0.88rem;
     font-weight: 500;
     ${GlobalFont}
+
+    @media (max-width: 600px) {
+        font-size: 0.75rem;
+        margin-top: 0.3rem;
+    }
 `;
 
 const OptionalText = styled.span`
@@ -398,6 +450,12 @@ const ButtonGroup = styled.div`
     justify-content: flex-end;
     gap: 1rem;
     margin-top: 2.5rem;
+
+    @media (max-width: 600px) {
+        // flex-direction: column;
+        gap: 0.7rem;
+        margin-top: 1.2rem;
+    }
 `;
 
 const BaseButton = styled.button`
@@ -412,6 +470,12 @@ const BaseButton = styled.button`
     &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+    }
+
+    @media (max-width: 600px) {
+        width: 100%;
+        padding: 0.7rem 0.7rem;
+        font-size: 0.75rem;
     }
 `;
 
@@ -437,7 +501,6 @@ const SecondaryAction = styled(BaseButton)`
     display: flex;
     align-items: center;
     gap: 0.5rem;
-
 
     &:hover:not(:disabled) {
         background-color: #ecf0f1;
@@ -465,6 +528,12 @@ const BackButton = styled.button`
     &:hover {
         background-color: rgba(52, 152, 219, 0.1);
         color: #2980b9;
+    }
+
+    @media (max-width: 600px) {
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        padding: 0.4rem;
     }
 `;
 
@@ -500,7 +569,15 @@ const MessageContainer = styled.div`
     `}
 
     svg {
-        font-size: 1.2em;
+        font-size: 1.em;
+    }
+
+    @media (max-width: 600px) {
+        padding: 0.7rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        gap: 0.5rem;
     }
 `;
 

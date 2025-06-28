@@ -1,14 +1,14 @@
 import styled from "styled-components";
-import BackLinkToDashboard from "../../ui/BackLinkToDashboard";
+import BackLinkToDashboard from "../../common/BackLinkToDashboard";
 import { DashboardContainer } from "../Learner/LearnersDashboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AssignmentDetailItem from "../../ui/AssignmentDetailItem";
+import AssignmentDetailItem from "../../common/AssignmentDetailItem";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import axios from 'axios';
 import { useAuth } from "../../../context/AuthContext";
-import LoadingSpinner from "../../ui/LoadingSpinner"; // Make sure this import is present
+import LoadingSpinner from "../../common/LoadingSpinner"; // Make sure this import is present
 
 import {
   faCheckCircle,
@@ -31,8 +31,18 @@ const AssignmentViewContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
   padding: 2rem;
-  max-width: 900px;
+  max-width: 700px;
   margin: 0 auto;
+
+  @media (max-width: 900px) {
+    max-width: 98vw;
+    padding: 1.2rem;
+  }
+  @media (max-width: 600px) {
+    padding: 0.7rem 0.2rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
 `;
 
 const Header = styled.div`
@@ -42,6 +52,13 @@ const Header = styled.div`
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #eee;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-bottom: 0.3rem;
+  }
 `;
 
 const Overlay = styled.div`
@@ -61,9 +78,9 @@ const SubmissionMessage = styled.div`
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 1.5rem;
-  padding: 1.25rem 1.5rem;
+  padding: 0.7rem 1rem;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 500;
   text-align: left;
   background: ${({ type }) =>
@@ -76,6 +93,14 @@ const SubmissionMessage = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  @media (max-width: 600px) {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+  }
 `;
 
 const StatusSpan = styled.span`
@@ -92,46 +117,37 @@ const StatusSpan = styled.span`
 const StatusBadge = styled.span`
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 500;
   text-transform: uppercase;
   display: flex;
   align-items: center;
   gap: 0.25rem;
+
   background-color: ${({ status }) => {
     switch (status) {
-      case 'Pending Submission':
-        return 'rgba(243, 156, 18, 0.1)';
-      case 'Submitted':
-        return 'rgba(52, 152, 219, 0.1)';
-      case 'In Review':
-        return 'rgba(243, 156, 18, 0.1)';
-      case 'Completed':
-        return 'rgba(46, 204, 113, 0.1)';
-      case 'Needs Update':
-        return 'rgba(231, 76, 60, 0.1)';
-      default:
-        return '#f1f3f5';
+      case 'Pending Submission': return 'rgba(243, 156, 18, 0.1)';
+      case 'Submitted': return 'rgba(52, 152, 219, 0.1)';
+      case 'Completed': return 'rgba(46, 204, 113, 0.1)';
+      case 'Needs Update': return 'rgba(231, 76, 60, 0.1)';
+      case 'In Review': return '#e5e7eb'; // Light gray background
+      case 'Resubmitted': return 'rgba(168, 85, 247, 0.13)';
+      default: return '#f1f3f5';
     }
   }};
+
   color: ${({ status }) => {
     switch (status) {
-      case 'Pending Submission':
-        return '#f39c12';
-      case 'Submitted':
-        return '#3498db';
-      case 'In Review':
-        return '#f39c12';
-      case 'Completed':
-        return '#2ecc71';
-      case 'Needs Update':
-        return '#e74c3c';
-      default:
-        return '#495057';
+      case 'Pending Submission': return '#f39c12';
+      case 'Submitted': return '#3498db';
+      case 'Completed': return '#2ecc71';
+      case 'Needs Update': return '#e74c3c';
+      case 'In Review': return '#111827'; // Black for "In Review"
+      case 'Resubmitted': return '#a855f7';
+      default: return '#495057';
     }
   }};
 `;
-
 const SectionTitle = styled.div`
   font-weight: 600;
   margin-bottom: 1.25rem;
@@ -139,65 +155,114 @@ const SectionTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  @media (max-width: 600px) {
+    font-size: 1rem;
+    margin-bottom: 0.7rem;
+    gap: 0.4rem;
+  }
 `;
 
 const AssignmentDetails = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
   margin-bottom: 2rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+  }
 `;
 
 const TextContainer = styled.div`
   width: 60%;
   margin-bottom: 2rem;
+
+  @media (max-width: 900px) {
+    width: 90%;
+  }
+  @media (max-width: 600px) {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
 `;
 
 const TextArea = styled.textarea`
   width: 100%;
   box-sizing: border-box;
-  min-height: 200px;
-  padding: 1.25rem;
+  min-height: 120px;
+  padding: 0.7rem;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow-y: auto;
   font-family: 'Courier New', Courier, monospace;
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  line-height: 1.5;
   transition: all 0.3s;
   resize: vertical;
+
   &:focus {
     outline: none;
     border-color: #4cc9f0;
     box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
+  }
+
+  @media (max-width: 600px) {
+    min-height: 80px;
+    font-size: 0.78rem;
+    padding: 0.5rem;
+    border-radius: 6px;
   }
 `;
 
 const UrlContainer = styled.div`
   margin-bottom: 2rem;
   width: 80%;
+
+  @media (max-width: 900px) {
+    width: 95%;
+  }
+  @media (max-width: 600px) {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
 `;
 
 const Input = styled.input`
   width: 100%;
   box-sizing: border-box;
-  padding: 1rem 1.25rem;
+  padding: 0.7rem 0.9rem;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   transition: all 0.3s;
+
   &:focus {
     outline: none;
     border-color: #4cc9f0;
     box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.2);
   }
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+    padding: 0.5rem 0.5rem;
+    border-radius: 6px;
+  }
 `;
 
 const InputLabel = styled.label`
   display: block;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   font-weight: 500;
   color: #666;
+  font-size: 0.9rem;
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+    margin-bottom: 0.3rem;
+  }
 `;
 
 const ReviewAction = styled.div`
@@ -207,68 +272,99 @@ const ReviewAction = styled.div`
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #eee;
+
+  @media (max-width: 600px) {
+    // flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
 `;
 
 const RejectedButton = styled.button`
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1.1rem;
   border: none;
-  border-radius: 30px;
-  font-size: 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background-color: #4361ee;
   color: white;
+
   &:hover {
     background-color: #3a0ca3;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
   }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 14px;
+  }
 `;
 
 const DraftButton = styled.button`
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1.1rem;
   border: none;
-  border-radius: 30px;
-  font-size: 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background-color: #e74c3c;
   color: white;
+
   &:hover {
     background-color: #c0392b;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
   }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 14px;
+  }
 `;
 
 const CompletedButton = styled.button`
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1.1rem;
   border: none;
-  border-radius: 30px;
-  font-size: 0.9rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background-color: #2ecc71;
   color: white;
+
   &:hover {
     background-color: #27ae60;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    font-size: 0.78rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 14px;
   }
 `;
 
@@ -643,7 +739,7 @@ export default function AssignmentReviewPage() {
                 </RejectedButton>
                 <DraftButton type="button" onClick={() => navigate(-1)}>
                   <FontAwesomeIcon icon={faFloppyDisk} />
-                  {'Save as Draft'}
+                  {'Back'}
                 </DraftButton>
                 <CompletedButton type="submit">
                   <FontAwesomeIcon icon={faCheck} />

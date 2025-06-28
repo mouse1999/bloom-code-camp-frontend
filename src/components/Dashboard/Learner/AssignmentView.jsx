@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import BackLinkToDashboard from "../../ui/BackLinkToDashboard";
+import BackLinkToDashboard from "../../common/BackLinkToDashboard";
 import { DashboardContainer, DashboardHeader, Title  } from "./LearnersDashboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AssignmentDetailItem from "../../ui/AssignmentDetailItem";
+import AssignmentDetailItem from "../../common/AssignmentDetailItem";
 import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ import {
   faCalendarAlt, 
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import LoadingSpinner from "../../ui/LoadingSpinner";
+import LoadingSpinner from "../../common/LoadingSpinner";
 import { faSignalMessenger } from "@fortawesome/free-brands-svg-icons";
 import axios from "axios";
 
@@ -32,6 +32,16 @@ const AssignmentViewContainer = styled.div`
   padding: 2rem;
   max-width: 700px;
   margin: 0 auto;
+
+  @media (max-width: 900px) {
+    max-width: 98vw;
+    padding: 1.2rem;
+  }
+  @media (max-width: 600px) {
+    padding: 0.7rem 0.3rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
 `;
 
 const Header = styled.div`
@@ -41,6 +51,13 @@ const Header = styled.div`
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #eee;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-bottom: 0.3rem;
+  }
 `;
 
 
@@ -59,7 +76,7 @@ const StatusBadge = styled.span`
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.85rem;
-  font-weight: 550;
+  font-weight: 600;
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -67,35 +84,25 @@ const StatusBadge = styled.span`
 
   background-color: ${({ status }) => {
     switch (status) {
-      case 'Pending Submission':
-        return 'rgba(243, 156, 18, 0.1)';
-      case 'Submitted':
-        return 'rgba(52, 152, 219, 0.1)';
-      case 'In Review':
-        return 'rgba(243, 156, 18, 0.1)';
-      case 'Completed':
-        return 'rgba(46, 204, 113, 0.1)';
-      case 'Needs Update':
-        return 'rgba(231, 76, 60, 0.1)';
-      default:
-        return '#f1f3f5';
+      case 'Pending Submission': return 'rgba(243, 156, 18, 0.1)';
+      case 'Submitted': return 'rgba(52, 152, 219, 0.1)';
+      case 'Completed': return 'rgba(46, 204, 113, 0.1)';
+      case 'Needs Update': return 'rgba(231, 76, 60, 0.1)';
+      case 'In Review': return '#e5e7eb'; // Light gray background
+      case 'Resubmitted': return 'rgba(168, 85, 247, 0.13)';
+      default: return '#f1f3f5';
     }
   }};
 
   color: ${({ status }) => {
     switch (status) {
-      case 'Pending Submission':
-        return '#f39c12';
-      case 'Submitted':
-        return '#3498db';
-      case 'In Review':
-        return '#f39c12';
-      case 'Completed':
-        return '#2ecc71';
-      case 'Needs Update':
-        return '#e74c3c';
-      default:
-        return '#495057';
+      case 'Pending Submission': return '#f39c12';
+      case 'Submitted': return '#3498db';
+      case 'Completed': return '#2ecc71';
+      case 'Needs Update': return '#e74c3c';
+      case 'In Review': return '#111827'; // Black for "In Review"
+      case 'Resubmitted': return '#a855f7';
+      default: return '#495057';
     }
   }};
 `;
@@ -107,6 +114,12 @@ const SectionTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  @media (max-width: 600px) {
+    font-size: 1rem;
+    margin-bottom: 0.7rem;
+    gap: 0.4rem;
+  }
 `;
 
 const AssignmentDetails = styled.div`
@@ -114,10 +127,31 @@ const AssignmentDetails = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+  }
 `;
 
 
 const VideoContainer = styled.div`
+  width: 100%;
+  margin-bottom: 1.5rem;
+
+  iframe {
+    border-radius: 8px;
+    width: 100%;
+    min-height: 220px;
+    max-height: 350px;
+
+    @media (max-width: 600px) {
+      min-height: 160px;
+      max-height: 220px;
+      border-radius: 4px;
+    }
+  }
 `;
 const FeedbackContainer = styled.div`
 font-weight: 500;
@@ -127,13 +161,17 @@ font-weight: 500;
   background-color: #f8f9fa;
   border-radius: 8px;
   padding: 1rem;
+
   & p {
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: 550;
-  
-  
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 550;
   }
 
+  @media (max-width: 600px) {
+    font-size: 0.85rem;
+    padding: 0.7rem 0.5rem;
+    border-radius: 4px;
+  }
 `;
 
 
@@ -152,7 +190,7 @@ const AssignmentView = () => {
   const processAssignmentForDisplay = (assignmentData) => {
     const details = [];
 
-    // Define the order and icons
+    
     const assignmentMapping = {
       "Submitted Date": { value: assignmentData.submittedAt, icon: faCalendarAlt },
       "Reviewed Date": { value: assignmentData.reviewedAt, icon: faCalendarAlt },
@@ -161,7 +199,6 @@ const AssignmentView = () => {
       "Learner" : { value: assignmentData.learnerName, icon: faUsers },
       "GitHub Repository URL": { value: assignmentData.githubUrl, icon: faClock },
       "Video Url": { value: assignmentData.reviewVideoUrl, icon: faVideo },
-      // "Status": { value: assignmentData.status, icon:   }
       "Assignment Number": { value: assignmentData.assignmentNumber, icon: faHashtag   },
       // "Due Date": { value: assignmentData.dueDate, icon: faCalendarAlt }, // Added DueDate
       // "Notes": { value: assignmentData.notes, icon: faInfoCircle }, // Added Notes
@@ -442,16 +479,16 @@ const MessageContainer = styled.div`
     svg {
         font-size: 1.2em;
     }
+
+    @media (max-width: 600px) {
+      padding: 0.7rem 0.5rem;
+      font-size: 0.95rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      gap: 0.5rem;
+    }
 `;
 
 const InfoMessage = styled(MessageContainer)`
    // Base styling handled by MessageContainer
-`;
-
-const VideoLinkContainer = styled.div`
-  margin-top: 1rem;
-  display: flex;
-  align-items: center;
-  font-size: 0.98rem;
-  word-break: break-all;
 `;

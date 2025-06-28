@@ -152,26 +152,50 @@ const GlassPanel = styled.div`
   margin: 2rem auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+
+  @media (max-width: 600px) {
+    padding: 0.7rem 0.2rem;
+    border-radius: 8px;
+    margin: 0.7rem auto;
+    max-width: 99vw;
+  }
 `;
 
 const FormHeader = styled.div`
   margin-bottom: 2rem;
   text-align: center;
+
+  @media (max-width: 600px) {
+    margin-bottom: 1rem;
+  }
 `;
 
 const FormTitle = styled.h1`
   font-size: 1.5rem;
   color: #1f2937;
   margin-bottom: 0.5rem;
+
+  @media (max-width: 600px) {
+    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+  }
 `;
 
 const FormSubtitle = styled.p`
   color: #6b7280;
   font-size: 0.875rem;
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+  }
 `;
 
 const FormGroup = styled.div`
   margin-bottom: 1.5rem;
+
+  @media (max-width: 600px) {
+    margin-bottom: 0.8rem;
+  }
 `;
 
 const InputLabel = styled.label`
@@ -180,11 +204,17 @@ const InputLabel = styled.label`
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+    margin-bottom: 0.3rem;
+  }
 `;
 
 const OptionalText = styled.span`
   color: #9ca3af;
   font-weight: normal;
+  font-size: 0.85em;
 `;
 
 const InputField = styled.input`
@@ -200,6 +230,12 @@ const InputField = styled.input`
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+    padding: 0.5rem;
+    border-radius: 6px;
   }
 `;
 
@@ -219,6 +255,12 @@ const TextAreaField = styled.textarea`
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+  }
 `;
 
 const ButtonGroup = styled.div`
@@ -226,6 +268,12 @@ const ButtonGroup = styled.div`
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 2rem;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
 `;
 
 const BaseButton = styled.button`
@@ -235,6 +283,13 @@ const BaseButton = styled.button`
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+
+  @media (max-width: 600px) {
+    width: 100%;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.5rem;
+    border-radius: 6px;
+  }
 `;
 
 const SecondaryAction = styled(BaseButton)`
@@ -267,6 +322,10 @@ const ErrorText = styled.span`
   margin-top: 0.25rem;
   font-size: 0.75rem;
   color: #ef4444;
+
+  @media (max-width: 600px) {
+    font-size: 0.7rem;
+  }
 `;
 
 const ErrorMessage = styled.div`
@@ -275,6 +334,12 @@ const ErrorMessage = styled.div`
   color: #ef4444;
   background: rgba(239, 68, 68, 0.1);
   border-radius: 8px;
+
+  @media (max-width: 600px) {
+    padding: 1rem 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
 `;
 
 
@@ -284,6 +349,11 @@ const AssignmentLabel = styled.label`
   font-weight: 500;
   color: #343a40;
   font-size: 0.95rem;
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+    margin-bottom: 0.3rem;
+  }
 `;
 
 const AssignmentSelect = styled.select`
@@ -294,11 +364,17 @@ const AssignmentSelect = styled.select`
   font-size: 1rem;
   background-color: white;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  s
+
   &:focus {
     outline: none;
     border-color: #4a6fa5;
     box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+    padding: 0.5rem 0.5rem;
+    border-radius: 6px;
   }
 `
 

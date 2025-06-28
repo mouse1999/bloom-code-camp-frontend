@@ -1,14 +1,14 @@
 import React, { useState, useEffect, use } from 'react';
 import styled from 'styled-components';
-import Header from '../../Header/Header';
-import SideMenu from '../../SideMenu/SideMenu';
-import AssignmentsDashboard from './LearnersDashboard';
-import CreateNewAssignment from './CreateNewAssignment';
-import AssignmentView from './AssignmentView';
+import Header from '../components/Nav/Header';
+import SideMenu from '../components/Nav/SideMenu';
+import AssignmentsDashboard from '../components/Dashboard/Learner/LearnersDashboard';
+import CreateNewAssignment from '../components/Dashboard/Learner/CreateNewAssignment';
+import AssignmentView from '../components/Dashboard/Learner/AssignmentView';
 import { Outlet, useNavigate } from 'react-router-dom';
-import LoadingSpinner from '../../ui/LoadingSpinner';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import {
   faTachometerAlt,
   faTasks,
@@ -48,9 +48,9 @@ const DashboardLayoutForLearners = () => {
     { icon: faTachometerAlt, label: 'Dashboard', id: 'Dashboard', path: '/learner' },
     { icon: faTasks, label: 'Create Assignment', id: 'Create Assignment', path: '/learner/create' },
     // { icon: faGraduationCap, label: 'Learning Path', id: 'learning-path' },
-    { icon: faBook, label: 'Resources', id: 'Resources', path: '/learner/resources' },
+    { icon: faBook, label: 'Resources', id: 'Resources', path: '#' },
     // { icon: faChartLine, label: 'Progress', id: 'progress' },
-    { icon: faCog, label: 'Settings', id: 'Settings', path: '/learner/settings' },
+    { icon: faCog, label: 'Settings', id: 'Settings', path: '#' },
   ];
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const DashboardLayoutForLearners = () => {
           return; 
         }
 
-        const response = await axios.get('http://localhost:8081/api/users/user', {
+        const response = await axios.get('http://localhost:8081/api/auth', {
           headers: {
             'Authorization': `Bearer ${token}`
           },

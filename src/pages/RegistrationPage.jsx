@@ -80,7 +80,7 @@ const RegistrationPage = () => {
       const { confirmPassword, ...registrationData } = formData;
       console.log(registrationData);
 
-      const response = await axios.post('http://localhost:8081/api/users/register', registrationData);
+      const response = await axios.post('http://localhost:8081/api/auth/register', registrationData);
 
       setIsRegistrationSuccessful(true);
 

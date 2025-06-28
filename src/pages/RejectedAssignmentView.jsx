@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import BackLinkToDashboard from "../../ui/BackLinkToDashboard";
-import { DashboardContainer, DashboardHeader, Title } from "./LearnersDashboard";
+import BackLinkToDashboard from "../components/common/BackLinkToDashboard";
+import { DashboardContainer, DashboardHeader, Title } from "../components/Dashboard/Learner/LearnersDashboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AssignmentDetailItem from "../../ui/AssignmentDetailItem";
+import AssignmentDetailItem from "../components/common/AssignmentDetailItem";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import {useAuth} from "../../../context/AuthContext";
+import {useAuth} from "../context/AuthContext";
 import {
   faCheckCircle,
   faClock,
@@ -20,7 +20,7 @@ import {
   faArrowLeft,
   faRedo
 } from "@fortawesome/free-solid-svg-icons";
-import LoadingSpinner from "../../ui/LoadingSpinner";
+import LoadingSpinner from "../components/common/LoadingSpinner";
 import axios from "axios";
 
 // Styled Components
@@ -34,6 +34,16 @@ const RejectedAssignmentContainer = styled.div`
   padding: 2rem;
   max-width: 700px;
   margin: 0 auto;
+
+  @media (max-width: 900px) {
+    max-width: 98vw;
+    padding: 1.2rem;
+  }
+  @media (max-width: 600px) {
+    padding: 0.7rem 0.2rem;
+    border-radius: 0;
+    box-shadow: none;
+  }
 `;
 const SubmissionMessage = styled.div`
   width: 100%;
@@ -54,6 +64,14 @@ const SubmissionMessage = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  @media (max-width: 600px) {
+    font-size: 0.85rem;
+    padding: 0.7rem 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+  }
 `;
 
 const Header = styled.div`
@@ -63,6 +81,13 @@ const Header = styled.div`
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #eee;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-bottom: 0.3rem;
+  }
 `;
 
 const StatusBadge = styled.span`
@@ -72,12 +97,18 @@ const StatusBadge = styled.span`
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-size: 0.85rem;
   background-color: rgba(231, 76, 60, 0.1);
   color: #e74c3c;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  @media (max-width: 600px) {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 18px;
+    gap: 0.3rem;
+  }
 `;
 
 const SectionTitle = styled.div`
@@ -87,6 +118,12 @@ const SectionTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
+
+  @media (max-width: 600px) {
+    font-size: 1rem;
+    margin-bottom: 0.7rem;
+    gap: 0.4rem;
+  }
 `;
 
 const AssignmentDetails = styled.div`
@@ -94,6 +131,12 @@ const AssignmentDetails = styled.div`
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+  }
 `;
 
 const FeedbackContainer = styled.div`
@@ -115,6 +158,22 @@ const FeedbackContainer = styled.div`
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
     margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    padding: 0.7rem 0.5rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+
+    & h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      gap: 0.3rem;
+    }
+    & p {
+      font-size: 0.85rem;
+    }
   }
 `;
 
@@ -123,6 +182,12 @@ const ActionButtons = styled.div`
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 2rem;
+
+  @media (max-width: 600px) {
+    // sflex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
 `;
 
 const Button = styled.button`
@@ -138,6 +203,14 @@ const Button = styled.button`
   &:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 5px;
+    gap: 0.3rem;
   }
 `;
 
@@ -165,10 +238,19 @@ const ResubmissionForm = styled.div`
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #eee;
+
+  @media (max-width: 600px) {
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
 `;
 
 const FormGroup = styled.div`
   margin-bottom: 1.5rem;
+
+  @media (max-width: 600px) {
+    margin-bottom: 0.8rem;
+  }
 `;
 
 const FormLabel = styled.label`
@@ -176,37 +258,53 @@ const FormLabel = styled.label`
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: #212529;
+
+  @media (max-width: 600px) {
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+  }
 `;
 
 const ErrorText = styled.span`
-    display: block;
-    margin-top: 0.6rem;
-    color: #e74c3c;
-    font-size: 0.88rem;
-    font-weight: 500;
-    ${GlobalFont}
+  display: block;
+  margin-top: 0.6rem;
+  color: #e74c3c;
+  font-size: 0.88rem;
+  font-weight: 500;
+  ${GlobalFont}
+
+  @media (max-width: 600px) {
+    font-size: 0.75rem;
+    margin-top: 0.3rem;
+  }
 `;
 
 const FormInput = styled.input`
   width: 100%;
-    box-sizing: border-box;
-    padding: 0.85rem 1.2rem;
-    border: 1px solid ${props => props.$hasError ? '#e74c3c' : '#bdc3c7'};
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.2s ease-in-out;
-    ${GlobalFont}
+  box-sizing: border-box;
+  padding: 0.85rem 1.2rem;
+  border: 1px solid ${props => props.$hasError ? '#e74c3c' : '#bdc3c7'};
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+  ${GlobalFont}
 
-    &:focus {
-        outline: none;
-        border-color: ${props => props.$hasError ? '#e74c3c' : '#3498db'};
-        box-shadow: 0 0 0 3px ${props => props.$hasError ? 'rgba(231, 76, 60, 0.3)' : 'rgba(52, 152, 219, 0.3)'};
-    }
+  &:focus {
+    outline: none;
+    border-color: ${props => props.$hasError ? '#e74c3c' : '#3498db'};
+    box-shadow: 0 0 0 3px ${props => props.$hasError ? 'rgba(231, 76, 60, 0.3)' : 'rgba(52, 152, 219, 0.3)'};
+  }
 
-    &:disabled {
-        background-color: #ecf0f1;
-        cursor: not-allowed;
-    }
+  &:disabled {
+    background-color: #ecf0f1;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 5px;
+  }
 `;
 
 const FormTextarea = styled.textarea`
@@ -223,6 +321,13 @@ const FormTextarea = styled.textarea`
     outline: none;
     border-color: #4361ee;
     box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.85rem;
+    min-height: 70px;
+    padding: 0.5rem;
+    border-radius: 5px;
   }
 `;
 

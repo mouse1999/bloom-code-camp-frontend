@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { AssignmentGrid, DashboardContainer } from '../Learner/LearnersDashboard'
 import styled from 'styled-components'
-import LoadingSpinner from '../../ui/LoadingSpinner';
-import AssignmentCard from '../Learner/AssignmentCard';
+import LoadingSpinner from '../../common/LoadingSpinner';
+import AssignmentCard from '../../common/AssignmentCard';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -293,9 +293,7 @@ function ReviewersDashboard({}) {
           assignmentNumber={assignment.assignmentNumber}
           involved={"reviewer"}
           onEditClick={handleEdit}
-          // onSubmitClick={handleSubmit}
           onViewClick={handleView}
-          // onResubmitClick={handleResubmit}
           onClaimClick={handleClaim}
           onReclaimClick={handleReclaim}
         />
@@ -311,104 +309,6 @@ function ReviewersDashboard({}) {
   }
 
 
-const TabsContainer = styled.div`
-  margin: 1.5rem 0;
-`;
-
-const Tabs = styled.div`
-  display: flex;
-  gap: 1rem;
-  border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 1.5rem;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none; /* Firefox */
-  &::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
-  }
-`;
-
-const Tab = styled.div`
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  font-weight: 600;
-  transition: all 0.3s;
-  white-space: nowrap;
-  position: relative;
-  color: #64748b;
-  font-size: 0.95rem;
-  
-  ${({ active }) => active && `
-    border-bottom-color: #3b82f6;
-    color: #1e293b;
-  `}
-
-  &:hover {
-    color: #1e293b;
-  }
-`;
-
-const TabBadge = styled.span`
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #3b82f6;
-  color: white;
-  border-radius: 9999px;
-  padding: 0.15rem 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-`;
-
-// const ReviewHeader = styled.div`
-//   background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-//   border-radius: 0.75rem;
-//   padding: 1.5rem;
-//   margin-bottom: 1.5rem;
-//   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-// `;
-
-const HeaderContent = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const WelcomeContainer = styled.div`
-  flex: 1;
-`;
-
-const WelcomeTitle = styled.h1`
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  color: white;
-`;
-
-const WelcomeParagraph = styled.p`
-  margin: 0;
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.9);
-  max-width: 80%;
-`;
-
-// const UserAvatar = styled.div`
-//   width: 48px;
-//   height: 48px;
-//   border-radius: 50%;
-//   background-color: rgba(255, 255, 255, 0.2);
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-// `;
-
-const Initials = styled.span`
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-`;
-
 const ReviewHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -419,12 +319,31 @@ const ReviewHeader = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 24px;
   border: 1px solid #EAECF0;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 600px) {
+    padding: 10px 4px;
+    border-radius: 7px;
+    margin-bottom: 12px;
+    gap: 0.7rem;
+  }
 `;
 
 const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: 600px) {
+    gap: 8px;
+  }
 `;
 
 const AvatarContainer = styled.div`
@@ -437,6 +356,12 @@ const UserAvatar = styled.img`
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #F4F6F8;
+
+  @media (max-width: 600px) {
+    width: 38px;
+    height: 38px;
+    border-width: 2px;
+  }
 `;
 
 const OnlineIndicator = styled.div`
@@ -448,6 +373,12 @@ const OnlineIndicator = styled.div`
   background-color: #12B76A;
   border-radius: 50%;
   border: 2px solid #FFFFFF;
+
+  @media (max-width: 600px) {
+    width: 9px;
+    height: 9px;
+    border-width: 1.2px;
+  }
 `;
 
 const WelcomeContent = styled.div`
@@ -458,6 +389,10 @@ const WelcomeContent = styled.div`
 const WelcomeText = styled.span`
   font-size: 14px;
   color: #667085;
+
+  @media (max-width: 600px) {
+    font-size: 12px;
+  }
 `;
 
 const UserName = styled.h1`
@@ -465,6 +400,11 @@ const UserName = styled.h1`
   font-weight: 600;
   color: #101828;
   margin: 4px 0;
+
+  @media (max-width: 600px) {
+    font-size: 15px;
+    margin: 2px 0;
+  }
 `;
 
 const DashboardType = styled.div`
@@ -479,9 +419,19 @@ const Badge = styled.span`
   border-radius: 16px;
   font-size: 12px;
   font-weight: 500;
+
+  @media (max-width: 600px) {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
 `;
 
-const HeaderRight = styled.div``;
+const HeaderRight = styled.div`
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+`;
 
 const StatsContainer = styled.div`
   display: flex;
@@ -490,6 +440,12 @@ const StatsContainer = styled.div`
   background: #F9FAFB;
   border-radius: 12px;
   padding: 8px 12px;
+
+  @media (max-width: 600px) {
+    gap: 4px;
+    padding: 5px 6px;
+    border-radius: 7px;
+  }
 `;
 
 const StatItem = styled.div`
@@ -497,23 +453,111 @@ const StatItem = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 0 8px;
+
+  @media (max-width: 600px) {
+    padding: 0 4px;
+  }
 `;
 
 const StatNumber = styled.span`
   font-size: 18px;
   font-weight: 600;
   color: #101828;
+
+  @media (max-width: 600px) {
+    font-size: 13px;
+  }
 `;
 
 const StatLabel = styled.span`
   font-size: 12px;
-  color:rgb(98, 137, 221);
+  color: rgb(98, 137, 221);
+
+  @media (max-width: 600px) {
+    font-size: 9px;
+  }
 `;
 
 const StatDivider = styled.div`
   width: 1px;
   height: 32px;
   background-color: #EAECF0;
+
+  @media (max-width: 600px) {
+    height: 18px;
+  }
+`;
+
+const TabsContainer = styled.div`
+  margin: 1.5rem 0;
+
+  @media (max-width: 600px) {
+    margin: 0.7rem 0;
+  }
+`;
+
+const Tabs = styled.div`
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    gap: 0.4rem;
+    margin-bottom: 0.7rem;
+  }
+`;
+
+const Tab = styled.div`
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  font-weight: 600;
+  transition: all 0.3s;
+  white-space: nowrap;
+  position: relative;
+  color: #64748b;
+  font-size: 0.95rem;
+
+  ${({ active }) => active && `
+    border-bottom-color: #3b82f6;
+    color: #1e293b;
+  `}
+
+  &:hover {
+    color: #1e293b;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.5rem;
+  }
+`;
+
+const TabBadge = styled.span`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 9999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  @media (max-width: 600px) {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.3rem;
+    top: -3px;
+    right: -3px;
+  }
 `;
 
 const TextMessage = styled.div`
@@ -531,6 +575,14 @@ const TextMessage = styled.div`
   border: 1px solid #dbeafe;
   align-self: flex-start;
   display: block;
+
+  @media (max-width: 600px) {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.85rem;
+    border-radius: 7px;
+    margin: 0.7rem 0;
+    max-width: 98vw;
+  }
 `;
 
 

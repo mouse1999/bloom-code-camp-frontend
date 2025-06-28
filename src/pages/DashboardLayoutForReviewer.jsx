@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import CreateNewAssignment from "../Learner/CreateNewAssignment";
-import Header from "../../Header/Header";
-import SideMenu from "../../SideMenu/SideMenu";
+import CreateNewAssignment from "../components/Dashboard/Learner/CreateNewAssignment";
+import Header from "../components/Nav/Header";
+import SideMenu from "../components/Nav/SideMenu";
 import styled from "styled-components";
 import { faBook, faChartLine, faCog, faGraduationCap, faTachometerAlt, faTasks } from "@fortawesome/free-solid-svg-icons";
-import ReviewersDashboard from "./ReviewersDashboard";
-import AssignmentView from "../Learner/AssignmentView";
-import AssignmentReviewPage from "./AssignmentReviewPage"
+import ReviewersDashboard from "../components/Dashboard/Reviewer/ReviewersDashboard";
+import AssignmentView from "../components/Dashboard/Learner/AssignmentView";
+import AssignmentReviewPage from "../components/Dashboard/Reviewer/AssignmentReviewPage"
 import axios from "axios";
-import { useAuth } from "../../../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { Outlet } from "react-router-dom";
 
 const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
@@ -17,6 +17,7 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
     const[isMobileView, setIsMobileView] = useState(false);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [activeItem, setActiveItem] = useState('');
     const [userData, setUserData] = useState({
         username: '',
         roles: [],
@@ -33,8 +34,8 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
 
     const menuItems = [
         { icon: faTachometerAlt, label: 'Dashboard', id: 'Dashboard', path: '/reviewer' },
-        { icon: faTasks, label: 'Learners', id: 'Learners' },
-        { icon: faCog, label: 'Settings', id: 'Settings' }
+        { icon: faTasks, label: 'Learners', id: 'Learners', path: '#' },
+        { icon: faCog, label: 'Settings', id: 'Settings', path: '#' }
       ];
   
     useEffect(() => {
@@ -74,7 +75,7 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
               return; 
             }
     
-            const response = await axios.get('http://localhost:8081/api/users/user', {
+            const response = await axios.get('http://localhost:8081/api/auth', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },
@@ -126,7 +127,7 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
 
       
       const response = await axios.post(
-        'http://localhost:8081/api/users/logout',
+        'http://localhost:8081/api/auth/logout',
         {}, 
         {
           headers: {
@@ -166,11 +167,13 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
         isMobileView={isMobileView} 
         menuItems={menuItems}
         handleLogout={handleLogout} 
+        activeItem={activeItem}
+        setActiveItem={setActiveItem}
         
         />
         
         <MainContent isOpen={isOpen}>
-          <Header handleLogout={handleLogout} userData={userData} />
+          <Header handleLogout={handleLogout} userData={userData} activeHeaderTitle={<span>{activeItem}</span>}  />
           <ContentWrapper>
 
             <Outlet context={value} />
