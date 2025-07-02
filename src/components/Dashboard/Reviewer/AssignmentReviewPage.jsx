@@ -466,7 +466,7 @@ export default function AssignmentReviewPage() {
         }
 
         const response = await axios.get(
-          `http://localhost:8081/api/reviewer/assignments/${id}`,
+          `https://bloomcamp.onrender.com/api/reviewer/assignments/${id}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -555,7 +555,7 @@ export default function AssignmentReviewPage() {
       }
 
       const response = await axios.put(
-        `http://localhost:8081/api/reviewer/assignments/${assignmentId}/complete`,
+        `https://bloomcamp.onrender.com/api/reviewer/assignments/${assignmentId}/complete`,
         formData,
         {
           headers: { 'Authorization': `Bearer ${token}` },
@@ -612,7 +612,7 @@ export default function AssignmentReviewPage() {
       }
 
       const response = await axios.put(
-        `http://localhost:8081/api/reviewer/assignments/${assignmentId}/resubmit`,
+        `https://bloomcamp.onrender.com/api/reviewer/assignments/${assignmentId}/resubmit`,
         formData,
         {
           headers: { 'Authorization': `Bearer ${token}` },

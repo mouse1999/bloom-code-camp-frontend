@@ -66,7 +66,7 @@ const CreateNewAssignment = () => {
                     return;
                 }
                 
-                const response = await axios.get('http://localhost:8081/api/assignments/enums', {
+                const response = await axios.get('https://bloomcamp.onrender.com/api/assignments/enums', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
@@ -131,7 +131,7 @@ const CreateNewAssignment = () => {
             }
     
             // Check if assignment is already done
-            const isDone = await axios.get(`http://localhost:8081/api/user/assignments/${selectedItem.assignmentNumber}/status`, {
+            const isDone = await axios.get(`https://bloomcamp.onrender.com/api/user/assignments/${selectedItem.assignmentNumber}/status`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -146,7 +146,7 @@ const CreateNewAssignment = () => {
                 // Attempt to create the assignment
                 try {
                     const response = await axios.post(
-                        'http://localhost:8081/api/assignments', 
+                        'https://bloomcamp.onrender.com/api/assignments', 
                         { assignmentNumber: selectedItem.assignmentNumber },
                         {
                             headers: { 'Authorization': `Bearer ${token}` },
@@ -238,7 +238,7 @@ const CreateNewAssignment = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await axios.post(`http://localhost:8081/api/user/assignments/${assignmentId}/submit`, formData, {
+            const response = await axios.post(`https://bloomcamp.onrender.com/api/user/assignments/${assignmentId}/submit`, formData, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('jwt token')}`
                 }

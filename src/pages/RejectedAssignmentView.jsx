@@ -412,7 +412,7 @@ const RejectedAssignmentView = () => {
           return;
         }
 
-        const response = await axios.get(`http://localhost:8081/api/user/assignments/${id}`, {
+        const response = await axios.get(`https://bloomcamp.onrender.com/api/user/assignments/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
@@ -463,7 +463,7 @@ const RejectedAssignmentView = () => {
       const token = user?.token || localStorage.getItem('jwt token');
 
       const response = await axios.post(
-        `http://localhost:8081/api/user/assignments/${assignmentId}/submit`,
+        `https://bloomcamp.onrender.com/api/user/assignments/${assignmentId}/submit`,
         {
           githubUrl: resubmitData.githubUrl,
           branch: resubmitData.branch,

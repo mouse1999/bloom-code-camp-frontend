@@ -172,7 +172,7 @@ function LoginPage() {
     try {
     
       const response = await axios.post(
-          'http://localhost:8081/api/auth/login',
+          'https://bloomcamp.onrender.com/api/auth/login',
           { username, password },
           {
               withCredentials: true, // Equivalent to credentials: 'include' for cookies

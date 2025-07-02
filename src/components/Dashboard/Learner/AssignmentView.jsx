@@ -268,7 +268,7 @@ const AssignmentView = () => {
                 }
 
                 // Await the axios call to get the actual data
-                const response = await axios.get(`http://localhost:8081/api/assignments/${id}`, {
+                const response = await axios.get(`https://bloomcamp.onrender.com/api/assignments/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },

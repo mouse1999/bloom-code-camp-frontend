@@ -32,7 +32,7 @@ const LearnersDashboard = () => {
         throw new Error('No authentication token found');
       }
 
-      let endpoint = 'http://localhost:8081/api/user/assignments';
+      let endpoint = 'https://bloomcamp.onrender.com/api/user/assignments';
       if (filter && filter !== 'All') {
         endpoint += `?status=${encodeURIComponent(filter)}`;
       }
@@ -71,7 +71,7 @@ const LearnersDashboard = () => {
     console.log(`Submitting assignment: ${assignmentId}`);
     try {
       // Replace with your actual API base URL
-      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      const API_BASE_URL = 'https://bloomcamp.onrender.com/api/user/assignments';
       await axios.put(`${API_BASE_URL}/${assignmentId}/submit`);
       alert(`Assignment ${assignmentId} submitted successfully!`);
       fetchAssignments(activeFilter);
@@ -89,7 +89,7 @@ const LearnersDashboard = () => {
   const handleResubmit = async (assignmentId) => {
     console.log(`Resubmitting assignment: ${assignmentId}`);
     try {
-      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      const API_BASE_URL = 'https://bloomcamp.onrender.com/api/user/assignments';
       await axios.put(`${API_BASE_URL}/${assignmentId}/resubmit`);
       alert(`Assignment ${assignmentId} resubmitted!`);
       fetchAssignments(activeFilter);
@@ -102,7 +102,7 @@ const LearnersDashboard = () => {
   const handleClaim = async (assignmentId) => {
     console.log(`Claiming assignment: ${assignmentId}`);
     try {
-      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      const API_BASE_URL = 'https://bloomcamp.onrender.com/api/user/assignments';
       // You'll need to define currentReviewerId and currentReviewerName
       // For demonstration, I'm using placeholders.
       const currentReviewerId = 'reviewer123';
@@ -122,7 +122,7 @@ const LearnersDashboard = () => {
   const handleReclaim = async (assignmentId) => {
     console.log(`Reclaiming assignment: ${assignmentId}`);
     try {
-      const API_BASE_URL = 'http://localhost:8081/api/user/assignments';
+      const API_BASE_URL = 'https://bloomcamp.onrender.com/api/user/assignments';
       // You'll need to define currentReviewerId and currentReviewerName
       const currentReviewerId = 'reviewer123';
       const currentReviewerName = 'John Doe';

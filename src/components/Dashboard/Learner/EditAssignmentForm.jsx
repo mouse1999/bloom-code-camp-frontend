@@ -55,7 +55,7 @@ const EditAssignmentForm = () => { // Renamed component
                 }
 
                 // API endpoint to fetch details of a specific submitted assignment by its ID
-                const response = await axios.get(`http://localhost:8081/api/user/assignments/${id}`, {
+                const response = await axios.get(`https://bloomcamp.onrender.com/api/user/assignments/${id}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
@@ -139,7 +139,7 @@ const EditAssignmentForm = () => { // Renamed component
             }
 
             
-            await axios.post(`http://localhost:8081/api/user/assignments/${assignmentId}/submit`, formData, {
+            await axios.post(`https://bloomcamp.onrender.com/api/user/assignments/${assignmentId}/submit`, formData, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setSubmissionMessage({ type: 'success', message: 'Assignment updated successfully!' });

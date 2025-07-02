@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
         const validateToken = async () => {
             if (!user || !user.token) return;
             try {
-                const response = await axios.get('http://localhost:8081/api/auth/validate', {
+                const response = await axios.get('https://bloomcamp.onrender.com/api/auth/validate', {
                     headers: {
                         'Authorization': `Bearer ${user.token}`
                     },

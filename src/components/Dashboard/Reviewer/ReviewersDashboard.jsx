@@ -32,7 +32,7 @@ function ReviewersDashboard({}) {
           throw new Error('No authentication token found');
         }
 
-        let endpoint = 'http://localhost:8081/api';
+        let endpoint = 'https://bloomcamp.onrender.com/api';
         if (tab && tab == 'Available') {
           endpoint += `/reviewer/assignments/claim-reclaim`;
         }else{
@@ -78,7 +78,7 @@ function ReviewersDashboard({}) {
         throw new Error('No authentication token found');
       }
 
-      const endpoint = 'http://localhost:8081/api/reviewer/assignments/claim-reclaim';
+      const endpoint = 'https://bloomcamp.onrender.com/api/reviewer/assignments/claim-reclaim';
 
       const response = await axios.get(endpoint, {
         headers: {
@@ -129,7 +129,7 @@ function ReviewersDashboard({}) {
         throw new Error('No authentication token found');
         return
       }
-      const response = await axios.get(`http://localhost:8081/api/assignments/${assignmentId}/claim`, {
+      const response = await axios.get(`https://bloomcamp.onrender.com/api/assignments/${assignmentId}/claim`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           withCredentials: true
@@ -156,7 +156,7 @@ function ReviewersDashboard({}) {
         throw new Error('No authentication token found');
         return
       }
-      const response = await axios.put(`http://localhost:8081/api/reviewer/assignments/${assignmentId}/reclaim`, {}, {
+      const response = await axios.put(`https://bloomcamp.onrender.com/api/reviewer/assignments/${assignmentId}/reclaim`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`,
           withCredentials: true

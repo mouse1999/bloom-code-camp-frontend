@@ -75,7 +75,7 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
               return; 
             }
     
-            const response = await axios.get('http://localhost:8081/api/auth', {
+            const response = await axios.get('https://bloomcamp.onrender.com/api/auth', {
               headers: {
                 'Authorization': `Bearer ${token}`
               },
@@ -127,7 +127,7 @@ const DashboardLayoutForReviewer = ({ children = <AssignmentView/> }) => {
 
       
       const response = await axios.post(
-        'http://localhost:8081/api/auth/logout',
+        'https://bloomcamp.onrender.com/api/auth/logout',
         {}, 
         {
           headers: {
