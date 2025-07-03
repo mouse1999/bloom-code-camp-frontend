@@ -344,7 +344,7 @@ const FilterButton = styled.button`
 export const AssignmentGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 0.4rem;
+  gap: 1rem;
   max-height: 60vh;
   overflow-y: auto;
   padding-bottom: 1rem;

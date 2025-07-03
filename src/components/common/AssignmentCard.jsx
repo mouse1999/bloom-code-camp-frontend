@@ -217,8 +217,8 @@ const AssignmentFormContainer = styled.div`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   transition: transform 0.3s, box-shadow 0.3s;
-  max-width: 420px;
-  width: 90%;
+  max-width: 500px;
+  width: 100%;
 
   &:hover {
     transform: translateY(-5px);
