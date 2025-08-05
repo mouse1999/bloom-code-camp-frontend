@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { AssignmentGrid, DashboardContainer } from '../Learner/LearnersDashboard'
 import styled from 'styled-components'
-import LoadingSpinner from '../../common/LoadingSpinner';
+
 import AssignmentCard from '../../common/AssignmentCard';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
@@ -13,13 +13,13 @@ import { useAuth} from '../../../context/AuthContext';
 function ReviewersDashboard({}) { 
     
     const [assignments, setAssignments] = useState([]);
-    const [activeTab, setActiveTab] = useState("Available"); // Default active tab
+    const [activeTab, setActiveTab] = useState("Available"); 
     const [isLoading, setIsLoading] = useState(true);
     const [availableBadgeLength, setAvailableBadgeLength] = useState(0);
     const [error, setError] = useState(null);
-    const [isAvailable, setIsAvailable] = useState(true); // Assuming 'Available' is the initial tab
-    const { userData } = useOutletContext(); // Assuming you have a context for loading state
-    const [submittedAssignments, setSubmittedAssignments] = useState([]);
+    const [isAvailable, setIsAvailable] = useState(true);
+    const { userData } = useOutletContext(); 
+    
     const navigate = useNavigate();
     const { currentUser } = useAuth();
 
